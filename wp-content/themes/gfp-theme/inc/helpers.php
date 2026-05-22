@@ -39,10 +39,22 @@ function gfp_get_fachbereich(int $post_id = 0): WP_Term|false {
     return ($terms && !is_wp_error($terms)) ? $terms[0] : false;
 }
 
+function gfp_farbe_fuer_name(string $name): string {
+    static $map = [
+        'leadership & führung'          => 'blue',
+        'facilitation & moderation'     => 'teal',
+        'teams & collaboration'         => 'orange',
+        'organisation & transformation' => 'purple',
+        'personality & skills'          => 'sky',
+    ];
+    $key = mb_strtolower(html_entity_decode($name, ENT_QUOTES | ENT_HTML5, 'UTF-8'), 'UTF-8');
+    return $map[$key] ?? 'blue';
+}
+
 function gfp_get_kurs_farbe(int $post_id = 0): string {
     $fachbereich = gfp_get_fachbereich($post_id);
     if (!$fachbereich) return 'blue';
-    return get_term_meta($fachbereich->term_id, 'farbe', true) ?: 'blue';
+    return gfp_farbe_fuer_name($fachbereich->name);
 }
 
 // ─── Datums- und Termin-Helfer ────────────────────────────────────────────────

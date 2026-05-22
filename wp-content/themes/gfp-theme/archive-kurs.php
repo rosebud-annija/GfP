@@ -12,11 +12,31 @@ defined('ABSPATH') || exit;
 
 // Alle Fachbereiche mit mindestens einem Kurs laden
 $fachbereiche = get_terms([
-    'taxonomy'   => 'fachbereich',
-    'hide_empty' => true,
-    'orderby'    => 'name',
-    'order'      => 'ASC',
+    'taxonomy'            => 'fachbereich',
+    'hide_empty'          => true,
+    'cache_results'       => false,
+    'update_term_meta_cache' => false,
 ]);
+
+// Gewünschte Reihenfolge der Filter-Buttons (lowercase für Vergleich)
+$filter_reihenfolge = [
+    'leadership & führung',
+    'facilitation & moderation',
+    'teams & collaboration',
+    'organisation & transformation',
+    'personality & skills',
+];
+if (!is_wp_error($fachbereiche)) {
+    usort($fachbereiche, function ($a, $b) use ($filter_reihenfolge) {
+        $norm_a = mb_strtolower(html_entity_decode($a->name, ENT_QUOTES | ENT_HTML5, 'UTF-8'), 'UTF-8');
+        $norm_b = mb_strtolower(html_entity_decode($b->name, ENT_QUOTES | ENT_HTML5, 'UTF-8'), 'UTF-8');
+        $pos_a  = array_search($norm_a, $filter_reihenfolge);
+        $pos_b  = array_search($norm_b, $filter_reihenfolge);
+        $pos_a  = $pos_a === false ? 999 : $pos_a;
+        $pos_b  = $pos_b === false ? 999 : $pos_b;
+        return $pos_a - $pos_b;
+    });
+}
 
 // Anzahl aller Kurse
 $args = [
@@ -56,7 +76,7 @@ get_header();
             </button>
 
             <?php foreach ($fachbereiche as $fb) :
-                $farbe     = get_term_meta($fb->term_id, 'farbe', true) ?: 'blue';
+                $farbe     = gfp_farbe_fuer_name($fb->name);
                 $farbe_hex = gfp_farbe_hex($farbe);
                 $anzahl    = $fb->count;
             ?>
@@ -64,6 +84,7 @@ get_header();
                     class="kurs-filter__btn"
                     data-filter="<?php echo esc_attr($fb->name); ?>"
                     data-farbe-hex="<?php echo esc_attr($farbe_hex); ?>"
+                    style="border-color: <?php echo esc_attr($farbe_hex); ?>; color: <?php echo esc_attr($farbe_hex); ?>;"
                 >
                     <?php echo esc_html($fb->name); ?> (<?php echo $anzahl; ?>)
                 </button>
