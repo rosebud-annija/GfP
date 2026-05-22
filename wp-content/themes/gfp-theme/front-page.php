@@ -160,8 +160,8 @@ get_header();
     <div class="hero-content">
         <p class="hero-eyebrow"><?php echo esc_html($hero_eyebrow); ?></p>
         <h1 class="hero-title display"><?php echo wp_kses_post($hero_titel); ?></h1>
-        <p class="hero-sub"><?php echo esc_html($hero_sub ?: 'Nicht unbesiegbar. Nur unaufhaltbar.'); ?></p>
-        <p class="hero-body"><?php echo esc_html($hero_text); ?></p>
+        <p class="hero-sub"><?php echo nl2br(esc_html($hero_sub ?: 'Nicht unbesiegbar. Nur unaufhaltbar.')); ?></p>
+        <p class="hero-body"><?php echo nl2br(esc_html($hero_text)); ?></p>
         <div class="hero-ctas">
             <a href="<?php echo esc_url($hero_cta_url ?: get_post_type_archive_link('kurs')); ?>" class="btn-dark">
                 <?php echo esc_html($hero_cta_label ?: 'Unsere Programme'); ?> →

@@ -35,7 +35,7 @@ add_action('save_post', function (int $post_id): void {
 
 function gfp_do_save_startseite(): void {
     $text_fields = [
-        'hp_hero_eyebrow', 'hp_hero_sub', 'hp_hero_cta_label',
+        'hp_hero_eyebrow', 'hp_hero_cta_label',
         'hp_cta_headline_l1', 'hp_cta_headline_l2',
         'hp_cta_label', 'hp_testi_author', 'hp_stats_label',
         'hp_stat_1_n', 'hp_stat_1_d', 'hp_stat_2_n', 'hp_stat_2_d', 'hp_stat_3_n', 'hp_stat_3_d',
@@ -62,7 +62,7 @@ function gfp_do_save_startseite(): void {
     }
 
     $textarea_fields = [
-        'hp_hero_titel', 'hp_hero_text', 'hp_problem_text', 'hp_cta_text', 'hp_testi_quote',
+        'hp_hero_titel', 'hp_hero_sub', 'hp_hero_text', 'hp_problem_text', 'hp_cta_text', 'hp_testi_quote',
         'hp_manifest_intro', 'hp_trainers_sub', 'hp_ft_brand_text',
         'hp_alfred_intro_p', 'hp_alfred_main_p', 'hp_alfred_opening_msg', 'hp_alfred_chips',
         'hp_marquee_items', 'hp_clients', 'hp_bilder',
@@ -264,10 +264,9 @@ function gfp_render_startseite_metabox(WP_Post $post): void {
                 <textarea name="hp_hero_titel" id="hp_hero_titel" rows="2"><?php echo esc_textarea($hero_titel); ?></textarea>
             </div>
             <div class="gfp-field">
-                <label for="hp_hero_sub">Subline (unter dem Titel)</label>
-                <input type="text" name="hp_hero_sub" id="hp_hero_sub"
-                       value="<?php echo esc_attr($hero_sub); ?>"
-                       placeholder="Nicht unbesiegbar. Nur unaufhaltbar.">
+                <label for="hp_hero_sub">Subline (unter dem Titel) — Enter für Zeilenumbruch</label>
+                <textarea name="hp_hero_sub" id="hp_hero_sub" rows="2"
+                          placeholder="Nicht unbesiegbar. Nur unaufhaltbar."><?php echo esc_textarea($hero_sub); ?></textarea>
             </div>
             <div class="gfp-field">
                 <label for="hp_hero_text">Beschreibungstext</label>
