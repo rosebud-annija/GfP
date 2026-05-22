@@ -1,30 +1,34 @@
 <?php
 defined('ABSPATH') || exit;
 
-// ─── Admin-Bar: „Seite bearbeiten" zur Startseiten-Admin-Seite umleiten ───────
+// ─── Meta Box nur auf der Startseite registrieren ─────────────────────────────
 
-add_action('admin_bar_menu', function (WP_Admin_Bar $bar): void {
-    if (!is_front_page() || !is_user_logged_in()) return;
-    $node = $bar->get_node('edit');
-    if (!$node) return;
-    $bar->add_node([
-        'id'   => 'edit',
-        'href' => admin_url('admin.php?page=gfp-startseite'),
-    ]);
-}, 100);
-
-// ─── Menüpunkt registrieren ───────────────────────────────────────────────────
-
-add_action('admin_menu', function (): void {
-    add_menu_page(
-        'Startseite bearbeiten',
-        '🏠 Startseite',
-        'edit_pages',
+add_action('add_meta_boxes_page', function (): void {
+    global $post;
+    if (!$post || (int) get_option('page_on_front') !== $post->ID) {
+        return;
+    }
+    add_meta_box(
         'gfp-startseite',
-        'gfp_render_startseite_page',
-        'dashicons-home',
-        3
+        '🏠 Startseite — Inhalte bearbeiten',
+        'gfp_render_startseite_metabox',
+        'page',
+        'normal',
+        'high'
     );
+});
+
+// ─── Speichern via save_post ──────────────────────────────────────────────────
+
+add_action('save_post', function (int $post_id): void {
+    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
+    if (wp_is_post_revision($post_id)) return;
+    if ((int) get_option('page_on_front') !== $post_id) return;
+    if (empty($_POST['_gfp_startseite_nonce'])) return;
+    if (!wp_verify_nonce(wp_unslash($_POST['_gfp_startseite_nonce']), 'gfp_startseite_save')) return;
+    if (!current_user_can('edit_page', $post_id)) return;
+
+    gfp_do_save_startseite();
 });
 
 // ─── Speicher-Funktion ────────────────────────────────────────────────────────
@@ -90,7 +94,7 @@ function gfp_do_save_startseite(): void {
     }
 }
 
-// ─── AJAX-Handler ─────────────────────────────────────────────────────────────
+// ─── AJAX-Handler (Fallback, weiterhin aktiv) ─────────────────────────────────
 
 add_action('wp_ajax_gfp_hp_save', function (): void {
     check_ajax_referer('gfp_startseite_save', '_gfp_startseite_nonce');
@@ -101,21 +105,10 @@ add_action('wp_ajax_gfp_hp_save', function (): void {
     wp_send_json_success('Gespeichert');
 });
 
-// ─── Admin-Seite rendern ──────────────────────────────────────────────────────
+// ─── Meta Box rendern ─────────────────────────────────────────────────────────
 
-function gfp_render_startseite_page(): void {
-    if (!current_user_can('edit_pages')) {
-        wp_die('Keine Berechtigung.');
-    }
-
-    $saved = false;
-    if (
-        !empty($_POST['_gfp_startseite_nonce']) &&
-        wp_verify_nonce(wp_unslash($_POST['_gfp_startseite_nonce']), 'gfp_startseite_save')
-    ) {
-        gfp_do_save_startseite();
-        $saved = true;
-    }
+function gfp_render_startseite_metabox(WP_Post $post): void {
+    wp_nonce_field('gfp_startseite_save', '_gfp_startseite_nonce');
 
     $m = fn(string $key, string $fb = '') => get_option('gfp_hp_' . $key, '') ?: $fb;
 
@@ -218,18 +211,6 @@ function gfp_render_startseite_page(): void {
     $ft_instagram   = $m('ft_instagram',   '#');
     $ft_youtube     = $m('ft_youtube',     '#');
     ?>
-    <div class="wrap">
-    <h1 style="display:flex;align-items:center;gap:10px;">🏠 Startseite bearbeiten</h1>
-
-    <?php if ($saved) : ?>
-        <div class="notice notice-success is-dismissible" style="margin:12px 0;">
-            <p><strong>✅ Gespeichert!</strong> Die Änderungen wurden übernommen.</p>
-        </div>
-    <?php endif; ?>
-
-    <form id="gfp-startseite-form" method="post" action="<?php echo esc_url(admin_url('admin.php?page=gfp-startseite')); ?>">
-        <input type="hidden" name="page" value="gfp-startseite">
-        <?php wp_nonce_field('gfp_startseite_save', '_gfp_startseite_nonce'); ?>
 
     <style>
     .gfp-hp .gfp-tabs  { display:flex; gap:4px; border-bottom:2px solid #ddd; margin-bottom:20px; flex-wrap:wrap; }
@@ -597,65 +578,70 @@ function gfp_render_startseite_page(): void {
 
     </div><!-- .gfp-hp -->
 
-    <div style="margin-top:24px;display:flex;align-items:center;gap:16px;">
-        <input type="submit" id="gfp-save-btn"
-               class="button button-primary button-large"
-               value="💾 Änderungen speichern">
-        <span id="gfp-save-msg" style="display:none;font-size:14px;font-weight:600;"></span>
+    <div style="margin-top:20px;">
+        <button type="button" id="gfp-hp-save-btn" class="button button-primary button-large">
+            💾 Startseite-Inhalte speichern
+        </button>
+        <span id="gfp-hp-save-msg" style="display:none;margin-left:12px;font-size:14px;font-weight:600;"></span>
     </div>
 
-    </form>
-    </div><!-- .wrap -->
-
     <script>
-    var GFP_NONCE = <?php echo json_encode(wp_create_nonce('gfp_startseite_save')); ?>;
+    (function() {
+        var GFP_NONCE = <?php echo json_encode(wp_create_nonce('gfp_startseite_save')); ?>;
 
-    document.querySelectorAll('.gfp-hp .gfp-tab').forEach(function(tab) {
-        tab.addEventListener('click', function() {
-            document.querySelectorAll('.gfp-hp .gfp-tab').forEach(function(t) { t.classList.remove('active'); });
-            document.querySelectorAll('.gfp-hp .gfp-panel').forEach(function(p) { p.classList.remove('active'); });
-            tab.classList.add('active');
-            document.getElementById('panel-' + tab.dataset.panel).classList.add('active');
+        // Tab-Switching
+        document.querySelectorAll('.gfp-hp .gfp-tab').forEach(function(tab) {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.gfp-hp .gfp-tab').forEach(function(t) { t.classList.remove('active'); });
+                document.querySelectorAll('.gfp-hp .gfp-panel').forEach(function(p) { p.classList.remove('active'); });
+                tab.classList.add('active');
+                document.getElementById('panel-' + tab.dataset.panel).classList.add('active');
+            });
         });
-    });
 
-    var gfpForm = document.getElementById('gfp-startseite-form');
-    var gfpBtn  = document.getElementById('gfp-save-btn');
-    var gfpMsg  = document.getElementById('gfp-save-msg');
+        // AJAX-Speichern
+        var btn = document.getElementById('gfp-hp-save-btn');
+        var msg = document.getElementById('gfp-hp-save-msg');
 
-    gfpForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        gfpBtn.disabled = true;
-        gfpBtn.value = '⏳ Speichert…';
-        gfpMsg.style.display = 'none';
+        btn.addEventListener('click', function() {
+            btn.disabled = true;
+            btn.textContent = '⏳ Speichert…';
+            msg.style.display = 'none';
 
-        var data = new FormData(gfpForm);
-        data.set('_gfp_startseite_nonce', GFP_NONCE);
-        data.append('action', 'gfp_hp_save');
+            // Alle Felder der Meta Box einsammeln
+            var container = btn.closest('.inside') || btn.parentElement.parentElement;
+            var fields = container.querySelectorAll('input[name], textarea[name], select[name]');
+            var data = new FormData();
+            data.append('action', 'gfp_hp_save');
+            data.append('_gfp_startseite_nonce', GFP_NONCE);
+            fields.forEach(function(el) {
+                if (el.name) data.append(el.name, el.value);
+            });
 
-        fetch(ajaxurl, { method: 'POST', credentials: 'same-origin', body: data })
-        .then(function(r) { return r.json(); })
-        .then(function(res) {
-            gfpBtn.disabled = false;
-            gfpBtn.value = '💾 Änderungen speichern';
-            gfpMsg.style.display = 'inline';
-            if (res.success) {
-                gfpMsg.style.color = '#00a32a';
-                gfpMsg.textContent = '✅ Gespeichert!';
-                setTimeout(function() { gfpMsg.style.display = 'none'; }, 3000);
-            } else {
-                gfpMsg.style.color = '#d63638';
-                gfpMsg.textContent = '❌ ' + (res.data || 'Fehler beim Speichern');
-            }
-        })
-        .catch(function(err) {
-            gfpBtn.disabled = false;
-            gfpBtn.value = '💾 Änderungen speichern';
-            gfpMsg.style.display = 'inline';
-            gfpMsg.style.color = '#d63638';
-            gfpMsg.textContent = '❌ Netzwerkfehler: ' + (err.message || 'Unbekannter Fehler');
+            fetch(ajaxurl, { method: 'POST', credentials: 'same-origin', body: data })
+                .then(function(r) { return r.json(); })
+                .then(function(res) {
+                    btn.disabled = false;
+                    btn.textContent = '💾 Startseite-Inhalte speichern';
+                    msg.style.display = 'inline';
+                    if (res.success) {
+                        msg.style.color = '#00a32a';
+                        msg.textContent = '✅ Gespeichert!';
+                        setTimeout(function() { msg.style.display = 'none'; }, 3000);
+                    } else {
+                        msg.style.color = '#d63638';
+                        msg.textContent = '❌ ' + (res.data || 'Fehler');
+                    }
+                })
+                .catch(function(err) {
+                    btn.disabled = false;
+                    btn.textContent = '💾 Startseite-Inhalte speichern';
+                    msg.style.display = 'inline';
+                    msg.style.color = '#d63638';
+                    msg.textContent = '❌ Netzwerkfehler';
+                });
         });
-    });
+    })();
     </script>
     <?php
 }
