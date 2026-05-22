@@ -69,9 +69,7 @@ foreach ($fb_defaults_fp as $i => [$d_num, $d_tag, $d_titel, $d_text]) {
             : $fb_farben_default[$i - 1];
     }
     $farbe = gfp_farbe_hex($farbe_slug);
-    $link  = $term
-        ? $kurse_archiv_url . '#' . rawurlencode($term->name)
-        : $kurse_archiv_url;
+    $link  = $kurse_archiv_url . '#' . rawurlencode(mb_strtolower($titel, 'UTF-8'));
     $fachbereiche_hp[] = [
         'num'   => gfp_hp("fb_{$i}_num",   $d_num),
         'tag'   => gfp_hp("fb_{$i}_tag",   $d_tag),
@@ -159,7 +157,7 @@ get_header();
 <section id="hero">
     <div class="hero-content">
         <p class="hero-eyebrow"><?php echo esc_html($hero_eyebrow); ?></p>
-        <h1 class="hero-title display"><?php echo wp_kses_post($hero_titel); ?></h1>
+        <h1 class="hero-title display"><?php echo nl2br(esc_html($hero_titel)); ?></h1>
         <p class="hero-sub"><?php echo nl2br(esc_html($hero_sub ?: 'Nicht unbesiegbar. Nur unaufhaltbar.')); ?></p>
         <p class="hero-body"><?php echo nl2br(esc_html($hero_text)); ?></p>
         <div class="hero-ctas">

@@ -32,7 +32,7 @@ $format_labels = [
 <a
     href="<?php the_permalink(); ?>"
     class="kurs-card"
-    data-fachbereich="<?php echo $fachbereich ? esc_attr($fachbereich->name) : ''; ?>"
+    data-fachbereich="<?php echo $fachbereich ? esc_attr(mb_strtolower(html_entity_decode($fachbereich->name, ENT_QUOTES | ENT_HTML5, 'UTF-8'), 'UTF-8')) : ''; ?>"
     style="border-color: <?php echo esc_attr($farbe_hex); ?>;"
 >
     <!-- Farbstreifen oben -->

@@ -1584,6 +1584,7 @@ body.post-type-archive-kurs .text-muted {
     }
 
     .hero-title { font-size: clamp(3.5rem, 18vw, 5.5rem); }
+    .hero-title br { display: none; }
 
     /* ── Alfred ── */
     .alfred-intro {

@@ -70,7 +70,7 @@ get_header();
             <button
                 class="kurs-filter__btn is-active"
                 data-filter="all"
-                style="background:#fff; color:#111; border-color:#fff;"
+                style="background:#111; color:#fff; border-color:#111;"
             >
                 Alle (<?php echo $alle_kurse_query->found_posts; ?>)
             </button>
@@ -82,9 +82,8 @@ get_header();
             ?>
                 <button
                     class="kurs-filter__btn"
-                    data-filter="<?php echo esc_attr($fb->name); ?>"
+                    data-filter="<?php echo esc_attr(mb_strtolower(html_entity_decode($fb->name, ENT_QUOTES | ENT_HTML5, 'UTF-8'), 'UTF-8')); ?>"
                     data-farbe-hex="<?php echo esc_attr($farbe_hex); ?>"
-                    style="border-color: <?php echo esc_attr($farbe_hex); ?>; color: <?php echo esc_attr($farbe_hex); ?>;"
                 >
                     <?php echo esc_html($fb->name); ?> (<?php echo $anzahl; ?>)
                 </button>

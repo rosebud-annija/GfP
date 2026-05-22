@@ -40,12 +40,8 @@
 
   // ── Button-Styles aktualisieren ─────────────────────────────────────────────
 
-  // Erkennt ob die Seite einen hellen Hintergrund hat (Kursübersicht = light)
-  var isLightBg = document.body.classList.contains('post-type-archive-kurs');
-  var inaktivColor      = isLightBg ? 'rgba(0,0,0,0.55)'   : 'rgba(255,255,255,0.6)';
-  var inaktivBorder     = isLightBg ? 'rgba(0,0,0,0.2)'    : 'rgba(255,255,255,0.2)';
-  var allAktivBg        = isLightBg ? '#111'                : '#fff';
-  var allAktivColor     = isLightBg ? '#fff'                : '#111';
+  var inaktivColor  = 'rgba(0,0,0,0.45)';
+  var inaktivBorder = 'rgba(0,0,0,0.2)';
 
   function updateButtons(aktiverFilter) {
     buttons.forEach(function (btn) {
@@ -56,15 +52,13 @@
       btn.classList.toggle('is-active', istAktiv);
 
       if (filter === 'all') {
-        // Alle-Button
-        btn.style.background   = istAktiv ? allAktivBg    : 'transparent';
-        btn.style.color        = istAktiv ? allAktivColor  : inaktivColor;
-        btn.style.borderColor  = istAktiv ? allAktivBg     : inaktivBorder;
+        btn.style.background  = istAktiv ? '#111'        : 'transparent';
+        btn.style.color       = istAktiv ? '#fff'        : inaktivColor;
+        btn.style.borderColor = istAktiv ? '#111'        : inaktivBorder;
       } else {
-        // Fachbereich-Button: Fachbereich-Farbe wenn aktiv
-        btn.style.background   = istAktiv ? farbeHex       : 'transparent';
-        btn.style.color        = istAktiv ? '#111'         : inaktivColor;
-        btn.style.borderColor  = istAktiv ? farbeHex       : inaktivBorder;
+        btn.style.background  = istAktiv ? farbeHex      : 'transparent';
+        btn.style.color       = istAktiv ? '#111'        : inaktivColor;
+        btn.style.borderColor = istAktiv ? farbeHex      : inaktivBorder;
       }
     });
   }

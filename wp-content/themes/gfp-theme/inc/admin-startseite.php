@@ -113,7 +113,7 @@ function gfp_render_startseite_metabox(WP_Post $post): void {
     $m = fn(string $key, string $fb = '') => get_option('gfp_hp_' . $key, '') ?: $fb;
 
     $hero_eyebrow   = $m('hero_eyebrow',   'Gesellschaft für Personalentwicklung');
-    $hero_titel     = $m('hero_titel',     'SUPERHEROES,<br>LIKE US.');
+    $hero_titel     = $m('hero_titel',     "SUPERHEROES,\nLIKE US.");
     $hero_sub       = $m('hero_sub',       'Nicht unbesiegbar. Nur unaufhaltbar.');
     $hero_text      = $m('hero_text',      'Wir entwickeln Menschen, Teams und Organisationen – mit Klarheit, Haltung und Wirkung.');
     $hero_cta_label = $m('hero_cta_label', 'Unsere Programme');

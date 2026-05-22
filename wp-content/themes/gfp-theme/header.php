@@ -21,21 +21,7 @@
         </a>
 
         <!-- Desktop-Navigation -->
-        <ul class="nav-links" role="list">
-            <li>
-                <a href="<?php echo esc_url(home_url('/')); ?>"
-                   class="nav-link"
-                   <?php echo is_front_page() ? 'aria-current="page"' : ''; ?>>
-                    Start
-                </a>
-            </li>
-            <li>
-                <a href="<?php echo esc_url(get_post_type_archive_link('kurs') ?: home_url('/kurse/')); ?>"
-                   class="nav-link"
-                   <?php echo is_post_type_archive('kurs') || get_post_type() === 'kurs' ? 'aria-current="page"' : ''; ?>>
-                    Kurse
-                </a>
-            </li>
+        <ul class="nav-links" role="list" style="margin-left: auto;">
             <li>
                 <?php
                 // Kontakt-Seite suchen oder Fallback auf #
@@ -72,16 +58,6 @@
 
 <!-- Mobile-Overlay -->
 <nav class="nav-mobile" id="navMobile" aria-label="Mobiles Menü" aria-hidden="true">
-    <a href="<?php echo esc_url(home_url('/')); ?>"
-       class="nav-link"
-       <?php echo is_front_page() ? 'aria-current="page"' : ''; ?>>
-        Start
-    </a>
-    <a href="<?php echo esc_url(get_post_type_archive_link('kurs') ?: home_url('/kurse/')); ?>"
-       class="nav-link"
-       <?php echo is_post_type_archive('kurs') ? 'aria-current="page"' : ''; ?>>
-        Kurse
-    </a>
     <a href="<?php echo esc_url($kontakt_url ?? home_url('/#kontakt')); ?>"
        class="nav-link">
         Kontakt
