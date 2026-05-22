@@ -1850,3 +1850,214 @@ a.kontakt-detail-link:hover { color: var(--lime); }
     .kontakt-hero { padding: 56px 24px 40px; }
     .kontakt-map  { padding: 0 24px 56px; }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   KONTAKT-SEITE: WEISSER HINTERGRUND
+   body.page-template-page-kontakt → /kontakt/
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+body.page-template-page-kontakt {
+    background-color: #ffffff;
+    color: var(--black);
+}
+
+body.page-template-page-kontakt .kontakt-hero {
+    background: #f5f5f3;
+    border-bottom-color: rgba(0,0,0,.08);
+}
+
+body.page-template-page-kontakt .kontakt-hero__title {
+    color: var(--black) !important;
+}
+
+body.page-template-page-kontakt .kontakt-hero__sub {
+    color: rgba(0,0,0,.55) !important;
+}
+
+body.page-template-page-kontakt .kontakt-intro {
+    color: rgba(0,0,0,.65) !important;
+}
+
+body.page-template-page-kontakt .kontakt-detail-value {
+    color: rgba(0,0,0,.75) !important;
+}
+
+body.page-template-page-kontakt a.kontakt-detail-link:hover {
+    color: var(--blue) !important;
+}
+
+body.page-template-page-kontakt .kontakt-form-heading {
+    color: var(--black) !important;
+}
+
+body.page-template-page-kontakt .kontakt-field label {
+    color: rgba(0,0,0,.45) !important;
+}
+
+body.page-template-page-kontakt .kontakt-field input,
+body.page-template-page-kontakt .kontakt-field textarea {
+    background: #fff !important;
+    border-color: rgba(0,0,0,.15) !important;
+    color: var(--black) !important;
+}
+
+body.page-template-page-kontakt .kontakt-field input::placeholder,
+body.page-template-page-kontakt .kontakt-field textarea::placeholder {
+    color: rgba(0,0,0,.3) !important;
+}
+
+body.page-template-page-kontakt .kontakt-field input:focus,
+body.page-template-page-kontakt .kontakt-field textarea:focus {
+    border-color: rgba(0,115,188,.45) !important;
+}
+
+body.page-template-page-kontakt .kontakt-msg--success {
+    background: rgba(0,115,188,.07);
+    border-left-color: var(--blue);
+    color: var(--black);
+}
+
+body.page-template-page-kontakt .kontakt-msg--error {
+    background: rgba(241,135,18,.08);
+    color: var(--black);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   ÜBER UNS SEITE
+   body.page-template-page-ueber-uns → /ueber-uns/
+   Gleiche kurs-hero-Struktur wie single-kurs, weißer Hintergrund.
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+body.page-template-page-ueber-uns {
+    background-color: #ffffff;
+    color: var(--black);
+}
+
+/* ── kurs-hero auf weißem Hintergrund (identisch zu single-kurs) ── */
+body.page-template-page-ueber-uns .kurs-hero {
+    background: #f5f5f3;
+}
+body.page-template-page-ueber-uns .kurs-hero__title {
+    color: var(--black) !important;
+}
+body.page-template-page-ueber-uns .kurs-hero__sub {
+    color: rgba(0,0,0,.68) !important;
+    max-width: 72ch;         /* etwas breiter als Kurs-Excerpt */
+}
+
+/* ── Gemeinsame Sektion ── */
+.uu-section {
+    padding: 80px var(--section-px);
+}
+.uu-section__inner {
+    max-width: var(--max-width);
+    margin: 0 auto;
+}
+.uu-section__head {
+    margin-bottom: 48px;
+}
+.uu-section__title {
+    font-family: var(--font-headline);
+    text-transform: uppercase;
+    color: var(--black);
+    margin-bottom: 12px;
+}
+.uu-section__sub {
+    color: rgba(0,0,0,.55);
+    max-width: 60ch;
+    font-size: var(--fs-body-lg);
+}
+
+/* ── Team ── */
+.uu-team {
+    background: #ffffff;
+}
+.uu-team-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+}
+.uu-trainer-card {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 24px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+.uu-trainer-card__img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center;
+    margin-bottom: 16px;
+    flex-shrink: 0;
+}
+.uu-trainer-card__img--placeholder {
+    background-color: rgba(0,115,188,.12);
+}
+.uu-trainer-card__name {
+    font-family: var(--font-headline);
+    font-size: var(--fs-label);
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: var(--black);
+    margin-bottom: 4px;
+}
+.uu-trainer-card__role {
+    font-size: .8125rem;
+    color: var(--blue);
+    margin-bottom: 10px;
+}
+.uu-trainer-card__bio {
+    font-size: .8125rem;
+    color: rgba(0,0,0,.55);
+    line-height: 1.55;
+    margin-bottom: 8px;
+}
+.uu-trainer-card__tags {
+    font-size: .75rem;
+    color: rgba(0,0,0,.38);
+    margin-top: auto;
+    padding-top: 8px;
+}
+
+/* ── Partner ── */
+.uu-partner {
+    background: #ffffff;
+}
+.uu-partner-grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+.uu-partner-link {
+    display: inline-block;
+    padding: 9px 22px;
+    border: 1px solid rgba(0,0,0,.18);
+    border-radius: 9999px;
+    font-family: var(--font-headline);
+    font-size: var(--fs-label);
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    color: rgba(0,0,0,.65);
+    text-decoration: none;
+    transition: background .2s, color .2s, border-color .2s;
+}
+a.uu-partner-link:hover {
+    background: var(--blue);
+    color: #fff;
+    border-color: var(--blue);
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+    .uu-section     { padding: 56px 24px; }
+    .uu-team-grid   { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; }
+    .uu-trainer-card { padding: 18px 14px; }
+}

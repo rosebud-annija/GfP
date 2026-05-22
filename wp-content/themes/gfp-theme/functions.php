@@ -49,3 +49,4 @@ require_once __DIR__ . '/inc/meta-trainer.php';
 require_once __DIR__ . '/inc/meta-kurs.php';
 require_once __DIR__ . '/inc/admin-startseite.php';
 require_once __DIR__ . '/inc/kontakt.php';
+require_once __DIR__ . '/inc/meta-ueber-uns.php';

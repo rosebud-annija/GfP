@@ -21,13 +21,21 @@
         </a>
 
         <!-- Desktop-Navigation -->
+        <?php
+        $kontakt    = get_page_by_path('kontakt');
+        $kontakt_url = $kontakt ? get_permalink($kontakt) : home_url('/#kontakt');
+        $ueber_uns  = get_page_by_path('ueber-uns');
+        $ueber_url  = $ueber_uns ? get_permalink($ueber_uns) : home_url('/ueber-uns/');
+        ?>
         <ul class="nav-links" role="list" style="margin-left: auto;">
             <li>
-                <?php
-                // Kontakt-Seite suchen oder Fallback auf #
-                $kontakt = get_page_by_path('kontakt');
-                $kontakt_url = $kontakt ? get_permalink($kontakt) : home_url('/#kontakt');
-                ?>
+                <a href="<?php echo esc_url($ueber_url); ?>"
+                   class="nav-link"
+                   <?php echo is_page('ueber-uns') ? 'aria-current="page"' : ''; ?>>
+                    Über uns
+                </a>
+            </li>
+            <li>
                 <a href="<?php echo esc_url($kontakt_url); ?>"
                    class="nav-link"
                    <?php echo is_page('kontakt') ? 'aria-current="page"' : ''; ?>>
@@ -58,6 +66,11 @@
 
 <!-- Mobile-Overlay -->
 <nav class="nav-mobile" id="navMobile" aria-label="Mobiles Menü" aria-hidden="true">
+    <a href="<?php echo esc_url($ueber_url ?? home_url('/ueber-uns/')); ?>"
+       class="nav-link"
+       <?php echo is_page('ueber-uns') ? 'aria-current="page"' : ''; ?>>
+        Über uns
+    </a>
     <a href="<?php echo esc_url($kontakt_url ?? home_url('/#kontakt')); ?>"
        class="nav-link">
         Kontakt
