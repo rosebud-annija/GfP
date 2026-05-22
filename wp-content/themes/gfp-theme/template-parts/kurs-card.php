@@ -55,7 +55,7 @@ $format_labels = [
         </div>
 
         <!-- Titel -->
-        <h3 class="kurs-card__title"><?php the_title(); ?></h3>
+        <h3 class="kurs-card__title"><?php echo gfp_kurs_titel_display($post_id); ?></h3>
 
         <!-- Kurzbeschreibung (Excerpt) -->
         <p class="kurs-card__desc"><?php echo esc_html(get_the_excerpt()); ?></p>

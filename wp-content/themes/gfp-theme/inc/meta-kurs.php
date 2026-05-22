@@ -83,6 +83,13 @@ function gfp_render_kurs_meta_box(WP_Post $post): void {
             <em>„Auszug"</em> in der rechten Seitenleiste eingeben.
         </p>
         <div class="gfp-field">
+            <label for="kurs_titel_display">Titel mit Trennhilfen (optional)</label>
+            <p class="desc">Setze <code>|</code> dort, wo bei langen Wörtern ein Zeilenumbruch mit Bindestrich erlaubt ist. Leer lassen → normaler Titel wird verwendet.<br>Beispiel: <code>Kommunikations|werkstatt</code></p>
+            <input type="text" name="kurs_titel_display" id="kurs_titel_display"
+                   value="<?php echo esc_attr(get_post_meta($post->ID, '_kurs_titel_display', true)); ?>"
+                   placeholder="z. B. Kommunikations|werkstatt">
+        </div>
+        <div class="gfp-field">
             <label for="kurs_format">Format *</label>
             <select name="kurs_format" id="kurs_format" required>
                 <option value="">— bitte wählen —</option>
@@ -413,4 +420,5 @@ add_action('save_post_kurs', function (int $post_id): void {
     update_post_meta($post_id, '_kurs_investition',     sanitize_text_field($_POST['kurs_investition']                    ?? ''));
     update_post_meta($post_id, '_kurs_voraussetzungen', sanitize_textarea_field($_POST['kurs_voraussetzungen']            ?? ''));
     update_post_meta($post_id, '_kurs_infoabend',       sanitize_text_field($_POST['kurs_infoabend']                      ?? ''));
+    update_post_meta($post_id, '_kurs_titel_display',   sanitize_text_field(wp_unslash($_POST['kurs_titel_display']        ?? '')));
 });

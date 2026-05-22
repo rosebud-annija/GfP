@@ -81,7 +81,7 @@ get_header();
             <?php endif; ?>
 
             <!-- Titel + Excerpt -->
-            <h1 class="kurs-hero__title"><?php the_title(); ?></h1>
+            <h1 class="kurs-hero__title"><?php echo gfp_kurs_titel_display(get_the_ID()); ?></h1>
 
             <?php if (has_excerpt()) : ?>
                 <p class="kurs-hero__sub"><?php echo esc_html(get_the_excerpt()); ?></p>

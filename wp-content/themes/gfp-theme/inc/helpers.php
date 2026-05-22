@@ -84,6 +84,18 @@ function gfp_format_label(string $format): string {
     };
 }
 
+// ─── Kurs-Anzeigetitel mit Soft-Hyphens ──────────────────────────────────────
+
+function gfp_kurs_titel_display(int $post_id = 0): string {
+    $post_id = $post_id ?: (int) get_the_ID();
+    $display = get_post_meta($post_id, '_kurs_titel_display', true);
+    if ($display) {
+        // | wird zu &shy; — sicher, weil esc_html() zuerst läuft
+        return str_replace('|', '&shy;', esc_html($display));
+    }
+    return esc_html(get_the_title($post_id));
+}
+
 // ─── Startseiten-Meta lesen ───────────────────────────────────────────────────
 
 function gfp_hp(string $field, string $fallback = ''): string {
