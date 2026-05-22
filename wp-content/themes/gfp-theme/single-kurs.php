@@ -33,15 +33,16 @@ $investition      = gfp_get_kurs_meta($post_id, 'investition')      ?: '';
 $voraussetzungen  = gfp_get_kurs_meta($post_id, 'voraussetzungen')  ?: '';
 $infoabend        = gfp_get_kurs_meta($post_id, 'infoabend')        ?: '';
 $termine_notiz    = gfp_get_kurs_meta($post_id, 'termine_notiz')    ?: '';
+$dauer            = gfp_get_kurs_meta($post_id, 'dauer')            ?: '';
 
 $kommend = gfp_kommende_termine($termine);
 
 // Sidebar-Infokästchen (nur befüllte Felder — kein Emoji)
 $infoboxen = array_filter([
+    $dauer           ? ['label' => 'Dauer',           'wert' => $dauer]           : null,
     $teilnehmer      ? ['label' => 'Teilnehmende',    'wert' => $teilnehmer]      : null,
     $investition     ? ['label' => 'Investition',     'wert' => $investition]     : null,
     $voraussetzungen ? ['label' => 'Voraussetzungen', 'wert' => $voraussetzungen] : null,
-    $termine_notiz   ? ['label' => 'Termine / Ort',   'wert' => $termine_notiz]   : null,
     $infoabend       ? ['label' => 'Infoabend',       'wert' => $infoabend]       : null,
 ]);
 
@@ -116,9 +117,9 @@ get_header();
         <!-- Rechte Spalte: Termine + Infokästchen -->
         <aside class="kurs-layout__sidebar" aria-label="Kursinfos">
 
-            <!-- Nächste Termine -->
+            <!-- Termine & Ort -->
             <div class="kurs-infocard" style="border-top-color: <?php echo esc_attr($farbe_hex); ?>;">
-                <p class="kurs-infocard__title" style="color: <?php echo esc_attr($farbe_hex); ?>;">Nächste Termine</p>
+                <p class="kurs-infocard__title" style="color: <?php echo esc_attr($farbe_hex); ?>;">Termine &amp; Ort</p>
                 <?php if (empty($kommend)) : ?>
                     <p class="kurs-infocard__empty">
                         Aktuell keine offenen Termine.<br>Inhouse-Buchung jederzeit möglich.
@@ -143,6 +144,9 @@ get_header();
                             </li>
                         <?php endforeach; ?>
                     </ul>
+                <?php endif; ?>
+                <?php if ($termine_notiz) : ?>
+                    <p class="kurs-infocard__notiz"><?php echo nl2br(esc_html($termine_notiz)); ?></p>
                 <?php endif; ?>
 
                 <!-- CTA -->

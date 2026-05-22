@@ -592,6 +592,16 @@ p  { max-width: 68ch; }                          /* Optimale Zeilenlänge: 60–
   line-height: 1.6;
 }
 
+/* Terminnotiz unterhalb der Terminliste */
+.kurs-infocard__notiz {
+  color: rgba(255,255,255,0.7);
+  font-size: 13px;
+  line-height: 1.5;
+  margin-top: .75rem;
+  padding-top: .75rem;
+  border-top: 1px solid rgba(255,255,255,0.15);
+}
+
 /* Keine Bullet-Points in den Kästchen */
 .kurs-infocard ul { list-style: none; padding: 0; }
 
@@ -736,9 +746,9 @@ p  { max-width: 68ch; }                          /* Optimale Zeilenlänge: 60–
 
 .kurs-cta-btn {
   display: inline-block;
-  text-align: center;
+  text-align: left;
   padding: 0.65rem 1.5rem;
-  border-radius: 0.75rem;
+  border-radius: 0;
   font-family: var(--font-headline);
   text-transform: uppercase;
   letter-spacing: 0.08em;

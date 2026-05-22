@@ -100,7 +100,14 @@ function gfp_render_kurs_meta_box(WP_Post $post): void {
                 <?php endforeach; ?>
             </select>
         </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;">
+            <div class="gfp-field">
+                <label for="kurs_dauer">Dauer</label>
+                <p class="desc">Wird als Infokästchen rechts angezeigt.</p>
+                <input type="text" name="kurs_dauer" id="kurs_dauer"
+                       value="<?php echo esc_attr(get_post_meta($post->ID, '_kurs_dauer', true)); ?>"
+                       placeholder="z. B. 2 Tage">
+            </div>
             <div class="gfp-field">
                 <label for="kurs_teilnehmer">Teilnehmerzahl</label>
                 <p class="desc">Wird als Infokästchen rechts angezeigt.</p>
@@ -416,6 +423,7 @@ add_action('save_post_kurs', function (int $post_id): void {
     update_post_meta($post_id, '_kurs_termine_notiz',   sanitize_textarea_field(wp_unslash($_POST['kurs_termine_notiz']   ?? '')));
     update_post_meta($post_id, '_kurs_cta_label',       sanitize_text_field($_POST['kurs_cta_label']                      ?? ''));
     update_post_meta($post_id, '_kurs_cta_url',         esc_url_raw($_POST['kurs_cta_url']                                ?? ''));
+    update_post_meta($post_id, '_kurs_dauer',           sanitize_text_field($_POST['kurs_dauer']                          ?? ''));
     update_post_meta($post_id, '_kurs_teilnehmer',      sanitize_text_field($_POST['kurs_teilnehmer']                     ?? ''));
     update_post_meta($post_id, '_kurs_investition',     sanitize_text_field($_POST['kurs_investition']                    ?? ''));
     update_post_meta($post_id, '_kurs_voraussetzungen', sanitize_textarea_field($_POST['kurs_voraussetzungen']            ?? ''));
