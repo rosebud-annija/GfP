@@ -1047,6 +1047,14 @@ body.home::after {
 .copt.sel { background: var(--lime); border-color: var(--lime); color: var(--black); font-weight: 600; }
 .copt:disabled { opacity: .45; cursor: default; }
 
+/* Fachbereich-Chips mit individueller Fachbereichsfarbe */
+.copt.copt-fb { border-color: var(--copt-color); color: var(--copt-color); }
+.copt.copt-fb:hover:not(:disabled) { background: rgba(255,255,255,.08); border-width: 2px; }
+
+/* "Alle Programme"-Link nach Empfehlungen */
+.akc-all-link { display: block; margin-top: 14px; font-size: var(--fs-xs); letter-spacing: .08em; text-decoration: none; transition: opacity .2s; }
+.akc-all-link:hover { opacity: .75; }
+
 .chat-input-row {
   padding: 14px 22px;
   border-top: 1px solid rgba(255,255,255,.1);
@@ -1072,16 +1080,16 @@ body.home::after {
 .alfred-kurs-card {
     display: block;
     background: rgba(255,255,255,.05);
-    border-left: 3px solid var(--sky);
+    border-left: 3px solid var(--akc-color, var(--sky));
     padding: 10px 14px;
     margin-bottom: 8px;
     text-decoration: none;
     border-radius: 0 2px 2px 0;
-    transition: background .2s;
+    transition: background .2s, border-color .2s;
 }
 .alfred-kurs-card:last-child { margin-bottom: 0; }
-.alfred-kurs-card:hover { background: rgba(80,193,224,.1); }
-.akc-fb    { display: block; letter-spacing: .15em; text-transform: uppercase; color: var(--sky); margin-bottom: 3px; }
+.alfred-kurs-card:hover { background: rgba(255,255,255,.09); }
+.akc-fb    { display: block; letter-spacing: .15em; text-transform: uppercase; margin-bottom: 3px; }
 .akc-title { display: block; font-family: var(--font-headline); letter-spacing: .04em; text-transform: uppercase; color: #fff; margin-bottom: 4px; }
 .akc-desc  { display: block; color: rgba(255,255,255,.45); line-height: 1.45; }
 
@@ -1230,9 +1238,8 @@ blockquote { font-family: var(--font-headline); color: var(--black); line-height
 
 /* ── 12. FOOTER ──────────────────────────────────────────────────────────────── */
 .ft-inner { max-width: 1200px; margin: 0 auto; }
-.ft-top { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 56px; margin-bottom: 56px; }
+.ft-top { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 56px; margin-bottom: 56px; }
 .ft-brand-logo { font-family: var(--font-headline); color: #fff; letter-spacing: .05em; margin-bottom: 8px; }
-.ft-brand-logo span { color: var(--lime); }
 .ft-brand-claim { font-family: var(--font-headline); letter-spacing: .16em; text-transform: uppercase; color: rgba(202,213,90,.45); margin-bottom: 14px; }
 .ft-brand-p { color: rgba(255,255,255,.35); line-height: 1.65; max-width: 260px; margin-bottom: 20px; }
 .ft-social { display: flex; gap: 10px; }

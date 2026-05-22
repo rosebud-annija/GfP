@@ -142,13 +142,6 @@ if ($bilder_raw) {
 // Manifest Intro
 $manifest_intro = gfp_hp('manifest_intro', 'Was uns antreibt. Was uns ausmacht. Was wir glauben, wenn es um Entwicklung von Menschen und Organisationen geht.');
 
-// Footer
-$ft_brand_claim = gfp_hp('ft_brand_claim', 'Superheroes, wie wir.');
-$ft_brand_text  = gfp_hp('ft_brand_text',  'Gesellschaft für Personalentwicklung — Wir entwickeln Menschen, Teams und Organisationen seit über 30 Jahren.');
-$ft_email       = gfp_hp('ft_email',       'info@gfp.de');
-$ft_linkedin    = gfp_hp('ft_linkedin',    '#');
-$ft_instagram   = gfp_hp('ft_instagram',   '#');
-$ft_youtube     = gfp_hp('ft_youtube',     '#');
 
 get_header();
 ?>
@@ -481,75 +474,26 @@ get_header();
     </div>
 </section>
 
-<!-- ══ FOOTER ════════════════════════════════════════════════════════════════ -->
-<footer class="site-footer" style="padding:64px 48px 36px;text-align:left;">
-    <div class="ft-inner">
-        <div class="ft-top">
-            <div>
-                <div class="ft-brand-logo">Gf<span>P</span></div>
-                <div class="ft-brand-claim"><?php echo esc_html($ft_brand_claim); ?></div>
-                <p class="ft-brand-p"><?php echo esc_html($ft_brand_text); ?></p>
-                <div class="ft-social">
-                    <a href="<?php echo esc_url($ft_linkedin); ?>" class="fsoc" aria-label="LinkedIn">in</a>
-                    <a href="<?php echo esc_url($ft_instagram); ?>" class="fsoc" aria-label="Instagram">ig</a>
-                    <a href="<?php echo esc_url($ft_youtube); ?>" class="fsoc" aria-label="YouTube">yt</a>
-                </div>
-            </div>
-            <div class="ft-col">
-                <h4>Programme</h4>
-                <ul>
-                    <?php
-                    $fachbereiche_terms = get_terms(['taxonomy' => 'fachbereich', 'hide_empty' => false]);
-                    if ($fachbereiche_terms && !is_wp_error($fachbereiche_terms)) :
-                        foreach ($fachbereiche_terms as $ft) : ?>
-                            <li><a href="<?php echo esc_url(get_term_link($ft)); ?>"><?php echo esc_html($ft->name); ?></a></li>
-                        <?php endforeach;
-                    else : ?>
-                        <li><a href="<?php echo esc_url(get_post_type_archive_link('kurs')); ?>">Alle Kurse</a></li>
-                    <?php endif; ?>
-                </ul>
-            </div>
-            <div class="ft-col">
-                <h4>GfP</h4>
-                <ul>
-                    <li><a href="#">Über uns</a></li>
-                    <li><a href="#">Team</a></li>
-                    <li><a href="#">Referenzen</a></li>
-                    <li><a href="#">Blog</a></li>
-                </ul>
-            </div>
-            <div class="ft-col">
-                <h4>Kontakt</h4>
-                <ul>
-                    <li><a href="mailto:<?php echo esc_attr($ft_email); ?>"><?php echo esc_html($ft_email); ?></a></li>
-                    <li><a href="#">Anfahrt</a></li>
-                    <li><a href="#">Impressum</a></li>
-                    <li><a href="#">Datenschutz</a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="ft-bottom">
-            <p>&copy; <?php echo date('Y'); ?> Gesellschaft für Personalentwicklung GmbH</p>
-            <span class="ft-bottom-claim">Superheroes, wie wir.</span>
-        </div>
-    </div>
-</footer>
-
 <!-- ══ SCROLL-FADE & ALFRED-CHAT JS ══════════════════════════════════════════ -->
 <?php
 $_alfred_kurse = [];
 $_kurs_posts   = get_posts(['post_type' => 'kurs', 'posts_per_page' => -1, 'post_status' => 'publish', 'orderby' => 'title', 'order' => 'ASC']);
 foreach ($_kurs_posts as $_k) {
-    $_fb = gfp_get_fachbereich($_k->ID);
+    $_fb      = gfp_get_fachbereich($_k->ID);
+    $_fb_name = $_fb ? $_fb->name : '';
+    $_fb_norm = $_fb_name ? mb_strtolower(html_entity_decode($_fb_name, ENT_QUOTES | ENT_HTML5, 'UTF-8'), 'UTF-8') : '';
+    $_farbe   = gfp_farbe_hex(gfp_get_kurs_farbe($_k->ID)) ?: '#27348b';
     $_alfred_kurse[] = [
         'title'   => $_k->post_title,
         'format'  => get_post_meta($_k->ID, '_kurs_format', true) ?: '',
-        'fb'      => $_fb ? $_fb->name : '',
+        'fb'      => $_fb_name,
+        'fb_norm' => $_fb_norm,
+        'farbe'   => $_farbe,
         'excerpt' => wp_strip_all_tags(get_the_excerpt($_k)),
         'url'     => get_permalink($_k->ID),
     ];
 }
-unset($_kurs_posts, $_k, $_fb);
+unset($_kurs_posts, $_k, $_fb, $_fb_name, $_fb_norm, $_farbe);
 ?>
 <script>
 const fuEls = document.querySelectorAll('.fu');
@@ -562,28 +506,59 @@ const ALFRED_BADGE = <?php echo json_encode($alfred_badge, JSON_UNESCAPED_UNICOD
 const OPENING_MSG  = <?php echo json_encode($alfred_opening_msg, JSON_UNESCAPED_UNICODE); ?>;
 const CHIPS        = <?php echo json_encode(array_values($alfred_chips), JSON_UNESCAPED_UNICODE); ?>;
 const KURSE        = <?php echo json_encode($_alfred_kurse, JSON_UNESCAPED_UNICODE); ?>;
+const KURSE_URL    = <?php echo json_encode(get_post_type_archive_link('kurs') ?: '/kurse/', JSON_UNESCAPED_UNICODE); ?>;
 
-const msgs   = document.getElementById('chatMsgs');
-const opts   = document.getElementById('chatOpts');
-const input  = document.getElementById('chatInput');
-const send   = document.getElementById('chatSend');
-const reset  = document.getElementById('chatReset');
+// Fachbereich-Farbzuordnung — nur für Ergebniskarten, kein Auswahlschritt
+const FB_COLOR = {
+    'leadership & führung':          '#0073BC',
+    'facilitation & moderation':     '#23B0A5',
+    'teams & collaboration':         '#F18712',
+    'organisation & transformation': '#9E4493',
+    'personality & skills':          '#50C1E0',
+};
+const FB_DISPLAY = {
+    'leadership & führung':          'Leadership & Führung',
+    'facilitation & moderation':     'Facilitation & Moderation',
+    'teams & collaboration':         'Teams & Collaboration',
+    'organisation & transformation': 'Organisation & Transformation',
+    'personality & skills':          'Personality & Skills',
+};
 
-let step = 0;
-let _topic  = '';
-let _format = '';
+// Keywords pro Fachbereich — für Soft-Scoring (keine harte Filterung)
+const FB_KEYWORDS = {
+    'leadership & führung':          ['führ','leadership','leitung','chef','vorgesetzt','entscheid','delegier','motivat','management'],
+    'facilitation & moderation':     ['meeting','workshop','moderat','facilit','sitzung','besprechung','seminar','storytell','präsent'],
+    'teams & collaboration':         ['team','zusammenarbeit','gruppe','kooperat','homeoffice','remote','kolleg'],
+    'organisation & transformation': ['veränder','transformation','change','organis','wandel','innovation','agil','learning','recruiting','hr','pe'],
+    'personality & skills':          ['persönlich','skill','kompetenz','kommunikation','auftreten','rhetorik','stress','resilienz','burnout','zeitmanag','selbst'],
+};
+
+// Kontext-Keywords — boosten bestimmte Kurstypen in den Ergebnissen
+const CONTEXT_BOOST = {
+    akut:        ['kompakt', 'online', 'toolbox', 'werkstatt', 'praxis', 'intensiv', 'tools'],
+    langfristig: ['programm', 'qualifizierung', 'parcours', 'expedition', 'zertifikat', 'lerngang', 'lern'],
+    projekt:     ['best practice', 'action learning', 'challenge', 'innovation', 'startup', 'strateg', 'business model'],
+};
+
+const msgs  = document.getElementById('chatMsgs');
+const opts  = document.getElementById('chatOpts');
+const input = document.getElementById('chatInput');
+const send  = document.getElementById('chatSend');
+const reset = document.getElementById('chatReset');
+
+let step     = 0;
+let _topic   = '';
+let _format  = '';
+let _context = '';
 
 function syncSteps() {
     const s = [document.getElementById('as1'), document.getElementById('as2'), document.getElementById('as3')];
     if (!s[0]) return;
     s.forEach(el => el.classList.remove('active', 'done'));
-    if (step === 0) {
-        s[0].classList.add('active');
-    } else if (step === 1) {
-        s[0].classList.add('done'); s[1].classList.add('active');
-    } else {
-        s[0].classList.add('done'); s[1].classList.add('done'); s[2].classList.add('active');
-    }
+    if      (step === 0) { s[0].classList.add('active'); }
+    else if (step === 1) { s[0].classList.add('done'); s[1].classList.add('active'); }
+    else if (step === 2) { s[0].classList.add('done'); s[1].classList.add('done'); s[2].classList.add('active'); }
+    else                 { s[0].classList.add('done'); s[1].classList.add('done'); s[2].classList.add('done'); }
 }
 
 function addMsg(html, type) {
@@ -600,18 +575,48 @@ function typing(cb) {
     d.innerHTML = '<div class="av">' + ALFRED_BADGE + '</div><div class="bbl"><div class="typing"><span></span><span></span><span></span></div></div>';
     msgs.appendChild(d);
     msgs.scrollTop = msgs.scrollHeight;
-    setTimeout(() => { d.remove(); cb(); }, 1100);
+    setTimeout(() => { d.remove(); cb(); }, 900);
 }
 
-function showChips(list) {
+function showChips(list, handler) {
     opts.innerHTML = '';
     list.forEach(label => {
         const btn = document.createElement('button');
         btn.className = 'copt';
         btn.textContent = label;
-        btn.onclick = () => handleInput(label);
+        btn.onclick = () => (handler || handleInput)(label);
         opts.appendChild(btn);
     });
+}
+
+// Stem-Match: direkter Treffer oder Stammform (~70% der Zeichen, mind. 4)
+function stemMatch(word, text) {
+    if (word.length < 3) return 0;
+    if (text.includes(word)) return 6;
+    const stem = word.slice(0, Math.max(4, Math.round(word.length * 0.7)));
+    return (stem.length >= 4 && text.includes(stem)) ? 3 : 0;
+}
+
+function scoreKurs(k, topic, contextKey) {
+    const t          = topic.toLowerCase();
+    const titleLow   = k.title.toLowerCase();
+    const excerptLow = (k.excerpt || '').toLowerCase();
+    let s = 0;
+
+    // Fachbereich-Soft-Boost: Anliegen passt thematisch zum Fachbereich des Kurses
+    (FB_KEYWORDS[k.fb_norm] || []).forEach(kw => { if (t.includes(kw)) s += 4; });
+
+    // Wort-für-Wort im Kurstitel (Stamm-basiert, 3× Gewicht) und Excerpt
+    const words = t.replace(/[^\wäöüß\s]/g, ' ').trim().split(/\s+/).filter(w => w.length > 2);
+    words.forEach(w => {
+        s += stemMatch(w, titleLow) * 3;
+        s += stemMatch(w, excerptLow);
+    });
+
+    // Kontext-Boost: passende Kurstypen nach Dringlichkeit/Rahmen
+    (CONTEXT_BOOST[contextKey] || []).forEach(kw => { if (titleLow.includes(kw)) s += 5; });
+
+    return s;
 }
 
 function fmtKey(val) {
@@ -623,40 +628,49 @@ function fmtKey(val) {
     return '';
 }
 
-function scoreKurs(k, topic, fmt) {
-    let s = 0;
-    if (fmt && k.format === fmt) s += 10;
-    const words = topic.toLowerCase().replace(/[^\wäöü\s]/g,'').split(/\s+/).filter(w => w.length > 3);
-    const hay = (k.title + ' ' + k.fb + ' ' + k.excerpt).toLowerCase();
-    words.forEach(w => { if (hay.includes(w)) s++; });
-    return s;
+function ctxKey(val) {
+    const v = val.toLowerCase();
+    if (v.includes('akut') || v.includes('bald') || v.includes('schnell')) return 'akut';
+    if (v.includes('langfristig') || v.includes('programm'))               return 'langfristig';
+    if (v.includes('projekt'))                                              return 'projekt';
+    return '';
 }
 
 function showRecommendations() {
     const fmt = fmtKey(_format);
-    const scored = KURSE.map(k => ({ ...k, _s: scoreKurs(k, _topic, fmt) }));
-    const byFmt  = scored.filter(k => !fmt || k.format === fmt).sort((a,b) => b._s - a._s);
-    const rest   = scored.filter(k => fmt && k.format !== fmt).sort((a,b) => b._s - a._s);
-    const top    = [...byFmt, ...rest].slice(0, 3);
+    const ctx = ctxKey(_context);
 
-    if (!top.length) {
-        addMsg('Ich habe leider noch keine passenden Programme gefunden. Schreib uns direkt: <a href="mailto:info@gfp.de" style="color:var(--lime)">info@gfp.de</a>', 'b');
-        return;
-    }
+    // Format-Filter mit Fallback: zu wenig Treffer → alle Formate zulassen
+    let pool = fmt ? KURSE.filter(k => k.format === fmt) : KURSE;
+    if (pool.length < 5) pool = KURSE;
+
+    const scored = pool
+        .map(k => ({ ...k, _s: scoreKurs(k, _topic, ctx) }))
+        .sort((a, b) => b._s - a._s || Math.random() - 0.5);
+    const top = scored.slice(0, 3);
+
     const cards = top.map(k => {
-        const desc = k.excerpt ? k.excerpt.substring(0, 90).trimEnd() + '…' : '';
-        const tag  = k.fb || k.format;
-        return '<a href="' + k.url + '" class="alfred-kurs-card" target="_blank" rel="noopener">'
-            + (tag  ? '<span class="akc-fb">'    + tag  + '</span>' : '')
+        const color      = k.farbe || FB_COLOR[k.fb_norm] || '#27348b';
+        const fbLabel    = FB_DISPLAY[k.fb_norm] || '';
+        const fmtLabel   = ({ academy: 'Academy', inhouse: 'Inhouse', coaching: 'Coaching', consulting: 'Consulting' })[k.format] || '';
+        const tagText    = [fbLabel, fmtLabel].filter(Boolean).join(' · ');
+        const desc       = k.excerpt ? k.excerpt.substring(0, 100).trimEnd() + '…' : '';
+        return '<a href="' + k.url + '" class="alfred-kurs-card" style="--akc-color:' + color + '" target="_blank" rel="noopener">'
+            + (tagText ? '<span class="akc-fb" style="color:' + color + '">' + tagText + '</span>' : '')
             + '<strong class="akc-title">' + k.title + '</strong>'
-            + (desc ? '<span class="akc-desc">'  + desc + '</span>' : '')
+            + (desc ? '<span class="akc-desc">' + desc + '</span>' : '')
             + '</a>';
     }).join('');
-    addMsg('Hier sind drei Programme, die passen könnten:<br><br>' + cards, 'b');
+
+    const archiveUrl = KURSE_URL;
+    const allLink    = '<a href="' + archiveUrl + '" class="akc-all-link">Alle 120 Programme ansehen →</a>';
+    addMsg('Hier sind drei passende Programme:<br><br>' + cards + allLink, 'b');
+    input.disabled = true;
+    send.disabled  = true;
 }
 
 function handleInput(val) {
-    if (!val.trim()) return;
+    if (!val.trim() || step >= 3) return;
     addMsg(val, 'u');
     opts.innerHTML = '';
     input.value = '';
@@ -666,10 +680,18 @@ function handleInput(val) {
     typing(() => {
         if (step === 1) {
             _topic = val;
-            addMsg('Verstanden. Wie möchtest du arbeiten?', 'b');
-            showChips(['Academy (offenes Seminar)', 'Inhouse (im Unternehmen)', 'Coaching (1:1)']);
-        } else {
+            addMsg('Wie möchtest du das angehen?', 'b');
+            showChips(['Coaching — 1:1 begleitet', 'Academy — offenes Seminar', 'Inhouse — bei uns im Unternehmen']);
+        } else if (step === 2) {
             _format = val;
+            addMsg('Eine Frage noch: Was ist dein Rahmen?', 'b');
+            showChips([
+                'Akuter Bedarf — möglichst bald',
+                'Langfristige Entwicklung — wir denken in Programmen',
+                'Konkretes Projekt läuft gerade',
+            ]);
+        } else {
+            _context = val;
             showRecommendations();
         }
     });
@@ -678,9 +700,12 @@ function handleInput(val) {
 function resetChat() {
     msgs.innerHTML = '';
     opts.innerHTML = '';
-    step = 0;
-    _topic = '';
-    _format = '';
+    input.disabled = false;
+    send.disabled  = false;
+    step           = 0;
+    _topic         = '';
+    _format        = '';
+    _context       = '';
     syncSteps();
     addMsg(OPENING_MSG, 'b');
     showChips(CHIPS);
@@ -693,8 +718,4 @@ input.addEventListener('keydown', e => { if (e.key === 'Enter') handleInput(inpu
 resetChat();
 </script>
 
-<?php
-wp_footer();
-?>
-</body>
-</html>
+<?php get_footer(); ?>
