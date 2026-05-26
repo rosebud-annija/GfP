@@ -50,17 +50,19 @@ $alle_kurse_query = new WP_Query($args);
 get_header();
 ?>
 
-<main class="site-main">
+<main class="site-main" style="padding-top: 64px;">
 
     <!-- ── Hero ──────────────────────────────────────────────────────────── -->
     <section class="kurse-hero">
-        <p class="kurse-hero__label">Alle Programme</p>
-        <h1 class="kurse-hero__title">Kurse &amp;<br>Programme</h1>
-        <p class="kurse-hero__sub">
-            <?php echo $alle_kurse_query->found_posts; ?> Programme in
-            <?php echo count($fachbereiche); ?> Fachbereichen —
-            von Leadership bis Facilitation, von Einzelcoaching bis Inhouse-Training.
-        </p>
+        <div class="kurse-hero__inner">
+            <p class="kurse-hero__label">Alle Programme</p>
+            <h1 class="kurse-hero__title">Kurse &amp;<br>Programme</h1>
+            <p class="kurse-hero__sub">
+                <?php echo $alle_kurse_query->found_posts; ?> Programme in
+                <?php echo count($fachbereiche); ?> Fachbereichen —
+                von Leadership bis Facilitation, von Einzelcoaching bis Inhouse-Training.
+            </p>
+        </div>
     </section>
 
     <!-- ── Filter-Buttons ────────────────────────────────────────────────── -->

@@ -270,7 +270,9 @@ p  { max-width: 68ch; }                          /* Optimale Zeilenlänge: 60–
 /* ─── Kurs-Übersicht ─────────────────────────────────────────────────────────── */
 
 .kurse-hero {
-  padding: 6rem var(--section-px) 3rem;
+  padding: 7rem var(--section-px) 4rem;
+}
+.kurse-hero__inner {
   max-width: var(--max-width);
   margin-inline: auto;
 }
@@ -295,7 +297,7 @@ p  { max-width: 68ch; }                          /* Optimale Zeilenlänge: 60–
 /* Filter-Leiste */
 .kurs-filter {
   padding: 0 var(--section-px) 3rem;
-  max-width: var(--max-width);
+  max-width: calc(var(--max-width) + 2 * var(--section-px));
   margin-inline: auto;
   display: flex;
   flex-wrap: wrap;
@@ -328,7 +330,7 @@ p  { max-width: 68ch; }                          /* Optimale Zeilenlänge: 60–
 /* Grid */
 .kurse-grid {
   padding: 0 var(--section-px) 6rem;
-  max-width: var(--max-width);
+  max-width: calc(var(--max-width) + 2 * var(--section-px));
   margin-inline: auto;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -528,7 +530,7 @@ p  { max-width: 68ch; }                          /* Optimale Zeilenlänge: 60–
 /* Hauptinhalt 2-Spalten */
 /* ── Kurs-Layout: Inhalt + Sidebar ── */
 .kurs-layout {
-  max-width: var(--max-width);
+  max-width: calc(var(--max-width) + 2 * var(--section-px));
   margin-inline: auto;
   padding: 4rem var(--section-px) 3rem;
   display: grid;
@@ -632,7 +634,7 @@ p  { max-width: 68ch; }                          /* Optimale Zeilenlänge: 60–
 
 /* ── Lernziele + Trainer — volle Breite ── */
 .kurs-blocks {
-  max-width: var(--max-width);
+  max-width: calc(var(--max-width) + 2 * var(--section-px));
   margin-inline: auto;
   padding: 3rem var(--section-px) 4rem;
   display: grid;
@@ -770,7 +772,7 @@ p  { max-width: 68ch; }                          /* Optimale Zeilenlänge: 60–
 
 /* Back-Link */
 .kurs-back {
-  max-width: var(--max-width);
+  max-width: calc(var(--max-width) + 2 * var(--section-px));
   margin-inline: auto;
   padding: 0 var(--section-px) 4rem;
 }
@@ -1718,11 +1720,11 @@ body.post-type-archive-kurs .text-muted {
 .kontakt-hero {
     background: #111;
     border-bottom: 1px solid rgba(255,255,255,.08);
-    padding: 72px var(--section-px) 56px;
+    padding: 7rem var(--section-px) 4rem;
 }
 .kontakt-hero__inner {
-    max-width: 860px;
-    margin: 0 auto;
+    max-width: var(--max-width);
+    margin-inline: auto;
 }
 .kontakt-hero__title {
     font-family: var(--font-headline);
@@ -1740,9 +1742,9 @@ body.post-type-archive-kurs .text-muted {
 }
 
 .kontakt-layout {
-    max-width: 1100px;
+    max-width: var(--max-width);
     margin: 0 auto;
-    padding: 64px var(--section-px);
+    padding: 4rem var(--section-px);
     display: grid;
     grid-template-columns: 1fr 1.6fr;
     gap: 80px;
@@ -1848,7 +1850,7 @@ a.kontakt-detail-link:hover { color: var(--lime); }
         gap: 48px;
         padding: 48px 24px;
     }
-    .kontakt-hero { padding: 56px 24px 40px; }
+    .kontakt-hero { padding: 5rem 24px 2.5rem; }
     .kontakt-map  { padding: 0 24px 56px; }
 }
 
