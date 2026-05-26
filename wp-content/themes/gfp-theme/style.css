@@ -594,7 +594,7 @@ p  { max-width: 68ch; }                          /* Optimale Zeilenlänge: 60–
 
 /* Terminnotiz unterhalb der Terminliste */
 .kurs-infocard__notiz {
-  color: rgba(255,255,255,0.7);
+  color: rgba(255,255,255,0.85); /* gleiche Farbe wie __wert */
   font-size: 13px;
   line-height: 1.5;
   margin-top: .75rem;
@@ -1436,7 +1436,8 @@ body.single-kurs .kurs-infocard__label {
     color: rgba(0,0,0,0.45) !important;
 }
 
-body.single-kurs .kurs-infocard__wert {
+body.single-kurs .kurs-infocard__wert,
+body.single-kurs .kurs-infocard__notiz {
     color: rgba(0,0,0,0.85) !important;
     font-size: 15px;
 }
@@ -1983,7 +1984,7 @@ body.page-template-page-ueber-uns .kurs-hero__sub {
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
 }
 .uu-team-grid--trainers {
-    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    grid-template-columns: repeat(5, 1fr);
 }
 .uu-team-grid--network {
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -1999,6 +2000,9 @@ body.page-template-page-ueber-uns .kurs-hero__sub {
     align-items: flex-start;
     text-align: left;
     box-shadow: 0 2px 10px rgba(0,0,0,.07);
+    min-width: 0;          /* verhindert Überlauf aus dem Grid-Track */
+    width: 100%;           /* füllt die Grid-Zelle vollständig */
+    box-sizing: border-box;
 }
 
 /* Photos */
@@ -2086,10 +2090,19 @@ a.uu-partner-link:hover {
 }
 
 /* ── Responsive ── */
+@media (max-width: 1300px) {
+    .uu-team-grid--trainers { grid-template-columns: repeat(4, 1fr); }
+}
+@media (max-width: 1024px) {
+    .uu-team-grid--trainers { grid-template-columns: repeat(3, 1fr); }
+}
 @media (max-width: 768px) {
     .uu-section          { padding: 56px 24px; }
     .uu-team-grid--firm  { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; }
-    .uu-team-grid--trainers { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; }
+    .uu-team-grid--trainers { grid-template-columns: repeat(2, 1fr); gap: 14px; }
     .uu-team-grid--network  { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 14px; }
     .uu-trainer-card     { padding: 18px 14px; }
+}
+@media (max-width: 480px) {
+    .uu-team-grid--trainers { grid-template-columns: repeat(1, 1fr); }
 }

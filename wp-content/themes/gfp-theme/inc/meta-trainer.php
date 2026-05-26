@@ -16,9 +16,10 @@ add_action('add_meta_boxes', function () {
 
 function gfp_render_trainer_meta_box(WP_Post $post): void {
     wp_nonce_field('gfp_trainer_save', 'gfp_trainer_nonce');
-    $role   = get_post_meta($post->ID, '_trainer_role',   true) ?: '';
-    $bio    = get_post_meta($post->ID, '_trainer_bio',    true) ?: '';
-    $tags   = get_post_meta($post->ID, '_trainer_tags',   true) ?: '';
+    $role         = get_post_meta($post->ID, '_trainer_role',         true) ?: '';
+    $bio          = get_post_meta($post->ID, '_trainer_bio',          true) ?: '';
+    $tags         = get_post_meta($post->ID, '_trainer_tags',         true) ?: '';
+    $name_display = get_post_meta($post->ID, '_trainer_name_display', true) ?: '';
     $gruppe     = get_post_meta($post->ID, '_trainer_gruppe',     true) ?: 'trainerin';
     $startseite = get_post_meta($post->ID, '_trainer_startseite', true);
     ?>
@@ -62,6 +63,14 @@ function gfp_render_trainer_meta_box(WP_Post $post): void {
         <hr class="gfp-sep">
 
         <div class="gfp-field">
+            <label for="trainer_name_display">Name (Anzeigeformat)</label>
+            <p class="desc">Optional. Verwende <code>|</code> um erlaubte Umbruchstellen zu markieren. Leer lassen = Seitenname wird verwendet.<br>Beispiel: <code>Mag. |Danielle |Arn-Stieger</code></p>
+            <input type="text" name="trainer_name_display" id="trainer_name_display"
+                   value="<?php echo esc_attr($name_display); ?>"
+                   placeholder="z. B. Mag. |Danielle Arn-Stieger">
+        </div>
+
+        <div class="gfp-field">
             <label for="trainer_role">Rolle / Titel</label>
             <p class="desc">z. B. „Leadership Coach" oder „Organisationsberaterin"</p>
             <input type="text" name="trainer_role" id="trainer_role"
@@ -90,6 +99,8 @@ add_action('save_post_trainer', function (int $post_id): void {
     if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
     if (!current_user_can('edit_post', $post_id)) return;
 
+    update_post_meta($post_id, '_trainer_name_display',
+        sanitize_text_field(wp_unslash($_POST['trainer_name_display'] ?? '')));
     update_post_meta($post_id, '_trainer_role',
         sanitize_text_field(wp_unslash($_POST['trainer_role'] ?? '')));
     update_post_meta($post_id, '_trainer_bio',

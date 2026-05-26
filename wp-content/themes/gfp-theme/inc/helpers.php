@@ -96,6 +96,18 @@ function gfp_kurs_titel_display(int $post_id = 0): string {
     return esc_html(get_the_title($post_id));
 }
 
+// ─── Trainer-Anzeigename mit Umbruchstellen ───────────────────────────────────
+// | im Feld _trainer_name_display → <wbr> (Umbrucherlaubnis, kein Bindestrich)
+
+function gfp_trainer_name_display(int $post_id): string {
+    $display = get_post_meta($post_id, '_trainer_name_display', true);
+    if ($display) {
+        $parts = explode('|', esc_html($display));
+        return implode('<wbr>', $parts);
+    }
+    return esc_html(get_post_field('post_title', $post_id));
+}
+
 // ─── Startseiten-Meta lesen ───────────────────────────────────────────────────
 
 function gfp_hp(string $field, string $fallback = ''): string {

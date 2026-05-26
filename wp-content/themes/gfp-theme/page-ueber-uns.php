@@ -79,7 +79,7 @@ get_header();
                          <?php if ($foto) echo 'style="background-image:url(' . esc_url($foto) . ')"'; ?>
                          aria-hidden="true"></div>
                     <div class="uu-trainer-card__body">
-                        <p class="uu-trainer-card__name"><?php echo esc_html($person->post_title); ?></p>
+                        <p class="uu-trainer-card__name"><?php echo gfp_trainer_name_display($person->ID); ?></p>
                         <?php if ($role) : ?>
                             <p class="uu-trainer-card__role"><?php echo esc_html($role); ?></p>
                         <?php endif; ?>
@@ -115,7 +115,7 @@ get_header();
                          <?php if ($foto) echo 'style="background-image:url(' . esc_url($foto) . ')"'; ?>
                          aria-hidden="true"></div>
                     <div class="uu-trainer-card__body">
-                        <p class="uu-trainer-card__name"><?php echo esc_html($person->post_title); ?></p>
+                        <p class="uu-trainer-card__name"><?php echo gfp_trainer_name_display($person->ID); ?></p>
                         <?php if ($role) : ?>
                             <p class="uu-trainer-card__role"><?php echo esc_html($role); ?></p>
                         <?php endif; ?>
@@ -151,7 +151,7 @@ get_header();
                          <?php if ($foto) echo 'style="background-image:url(' . esc_url($foto) . ')"'; ?>
                          aria-hidden="true"></div>
                     <div class="uu-trainer-card__body">
-                        <p class="uu-trainer-card__name"><?php echo esc_html($person->post_title); ?></p>
+                        <p class="uu-trainer-card__name"><?php echo gfp_trainer_name_display($person->ID); ?></p>
                         <?php if ($role) : ?>
                             <p class="uu-trainer-card__role"><?php echo esc_html($role); ?></p>
                         <?php endif; ?>
