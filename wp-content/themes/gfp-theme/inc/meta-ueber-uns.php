@@ -75,20 +75,53 @@ function gfp_render_uu_meta_box(WP_Post $post): void {
 
         <hr class="gfp-uu-sep">
 
-        <!-- TEAM -->
-        <p class="gfp-uu-stitle">Team</p>
-        <p class="gfp-uu-hint">💡 Trainerinnen & Trainer werden automatisch aus <strong>Trainer</strong> (im Menü) geladen.
-           Dort können Foto, Rolle und Bio pro Person gepflegt werden.</p>
+        <!-- FIRMENMITGLIEDER -->
+        <p class="gfp-uu-stitle">Firmenmitglieder</p>
+        <p class="gfp-uu-hint">💡 Personen mit Gruppe „Firmenmitglied" (im Trainer-Menü gepflegt). Erscheinen als größere Karten.</p>
 
         <div class="gfp-uu-field full">
-            <label for="uu_team_heading">Abschnitts-Überschrift</label>
-            <input type="text" id="uu_team_heading" name="uu_team_heading"
-                   value="<?php echo $f('team_heading', 'Unsere Beraterinnen & Trainerinnen'); ?>">
+            <label for="uu_firm_heading">Abschnitts-Überschrift</label>
+            <input type="text" id="uu_firm_heading" name="uu_firm_heading"
+                   value="<?php echo $f('firm_heading', 'Unser Team'); ?>">
         </div>
         <div class="gfp-uu-field full">
-            <label for="uu_team_sub">Subtext (optional)</label>
-            <input type="text" id="uu_team_sub" name="uu_team_sub"
-                   value="<?php echo $f('team_sub', ''); ?>">
+            <label for="uu_firm_sub">Subtext (optional)</label>
+            <input type="text" id="uu_firm_sub" name="uu_firm_sub"
+                   value="<?php echo $f('firm_sub', ''); ?>">
+        </div>
+
+        <hr class="gfp-uu-sep">
+
+        <!-- TRAINERINNEN -->
+        <p class="gfp-uu-stitle">Beraterinnen &amp; Trainerinnen</p>
+        <p class="gfp-uu-hint">💡 Personen mit Gruppe „Trainerin / Trainer" (im Trainer-Menü gepflegt).</p>
+
+        <div class="gfp-uu-field full">
+            <label for="uu_trainers_heading">Abschnitts-Überschrift</label>
+            <input type="text" id="uu_trainers_heading" name="uu_trainers_heading"
+                   value="<?php echo $f('trainers_heading', 'Beraterinnen & Trainerinnen'); ?>">
+        </div>
+        <div class="gfp-uu-field full">
+            <label for="uu_trainers_sub">Subtext (optional)</label>
+            <input type="text" id="uu_trainers_sub" name="uu_trainers_sub"
+                   value="<?php echo $f('trainers_sub', ''); ?>">
+        </div>
+
+        <hr class="gfp-uu-sep">
+
+        <!-- NETZWERKPARTNERINNEN -->
+        <p class="gfp-uu-stitle">Netzwerkpartnerinnen &amp; -partner</p>
+        <p class="gfp-uu-hint">💡 Personen mit Gruppe „Netzwerkpartnerin / -partner" (im Trainer-Menü gepflegt). Erscheinen als mittlere Karten.</p>
+
+        <div class="gfp-uu-field full">
+            <label for="uu_network_heading">Abschnitts-Überschrift</label>
+            <input type="text" id="uu_network_heading" name="uu_network_heading"
+                   value="<?php echo $f('network_heading', 'Netzwerkpartnerinnen & -partner'); ?>">
+        </div>
+        <div class="gfp-uu-field full">
+            <label for="uu_network_sub">Subtext (optional)</label>
+            <input type="text" id="uu_network_sub" name="uu_network_sub"
+                   value="<?php echo $f('network_sub', ''); ?>">
         </div>
 
         <hr class="gfp-uu-sep">
@@ -174,7 +207,13 @@ add_action('save_post_page', function (int $post_id): void {
     if (!current_user_can('edit_post', $post_id)) return;
     if (get_page_template_slug($post_id) !== 'page-ueber-uns.php') return;
 
-    $text_fields = ['uu_hero_badge', 'uu_hero_title', 'uu_team_heading', 'uu_team_sub', 'uu_partner_heading'];
+    $text_fields = [
+        'uu_hero_badge', 'uu_hero_title',
+        'uu_firm_heading',    'uu_firm_sub',
+        'uu_trainers_heading', 'uu_trainers_sub',
+        'uu_network_heading', 'uu_network_sub',
+        'uu_partner_heading',
+    ];
     foreach ($text_fields as $field) {
         update_post_meta($post_id, '_' . $field,
             sanitize_text_field(wp_unslash($_POST[$field] ?? '')));

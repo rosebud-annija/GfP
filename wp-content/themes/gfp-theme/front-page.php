@@ -33,7 +33,13 @@ $testi_quote    = gfp_hp('testi_quote',    '„GfP hat uns nicht nur trainiert �
 $testi_author   = gfp_hp('testi_author',   'Anna Müller · Head of People, TechCorp GmbH');
 
 // Trainer laden (CPT "trainer" oder Fallback)
-$trainer_posts = get_posts(['post_type' => 'trainer', 'posts_per_page' => 6, 'post_status' => 'publish']);
+$trainer_posts = get_posts([
+    'post_type'      => 'trainer',
+    'posts_per_page' => 6,
+    'post_status'    => 'publish',
+    'orderby'        => ['menu_order' => 'ASC', 'title' => 'ASC'],
+    'meta_query'     => [['key' => '_trainer_startseite', 'value' => '1']],
+]);
 $trainer_fallback = [
     ['name' => 'Maria Berger',   'rolle' => 'Leadership Coach',        'tags' => ['Führung','Coaching'],     'bio' => 'Maria begleitet Führungskräfte seit 15 Jahren dabei, authentisch und wirksam zu führen.'],
     ['name' => 'Thomas Klein',   'rolle' => 'Facilitation Expert',     'tags' => ['Moderation','Teams'],     'bio' => 'Thomas macht komplexe Workshops zu klaren Ergebnissen – mit Leichtigkeit und Methode.'],

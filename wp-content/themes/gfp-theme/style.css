@@ -1969,42 +1969,72 @@ body.page-template-page-ueber-uns .kurs-hero__sub {
 }
 
 /* ── Team ── */
-.uu-team {
-    background: #ffffff;
-}
+.uu-team           { background: #f0f2f7; }
+.uu-team--firm     { background: #f0f2f7; }
+.uu-team--trainers { background: #f0f2f7; }
+.uu-team--network  { background: #f0f2f7; }
+
+/* Grid densities */
 .uu-team-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 20px;
 }
+.uu-team-grid--firm {
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+}
+.uu-team-grid--trainers {
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+}
+.uu-team-grid--network {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+}
+
+/* Base card */
 .uu-trainer-card {
     background: #ffffff;
     border-radius: 12px;
     padding: 24px 20px;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    text-align: center;
+    align-items: flex-start;
+    text-align: left;
+    box-shadow: 0 2px 10px rgba(0,0,0,.07);
 }
+
+/* Photos */
 .uu-trainer-card__img {
     width: 80px;
     height: 80px;
     border-radius: 50%;
     background-size: cover;
     background-position: center;
-    margin-bottom: 16px;
+    margin-bottom: 14px;
     flex-shrink: 0;
+}
+.uu-trainer-card__img--lg {
+    width: 120px;
+    height: 120px;
+}
+.uu-trainer-card__img--md {
+    width: 100px;
+    height: 100px;
 }
 .uu-trainer-card__img--placeholder {
     background-color: rgba(0,115,188,.12);
 }
+
+/* Text */
 .uu-trainer-card__name {
     font-family: var(--font-headline);
-    font-size: var(--fs-label);
+    font-size: 1.45rem;
     text-transform: uppercase;
-    letter-spacing: .06em;
+    letter-spacing: .05em;
     color: var(--black);
-    margin-bottom: 4px;
+    line-height: 1.15;
+    margin-bottom: 6px;
+}
+.uu-trainer-card--lg .uu-trainer-card__name {
+    font-size: 1.7rem;
 }
 .uu-trainer-card__role {
     font-size: .8125rem;
@@ -2012,14 +2042,14 @@ body.page-template-page-ueber-uns .kurs-hero__sub {
     margin-bottom: 10px;
 }
 .uu-trainer-card__bio {
-    font-size: .8125rem;
-    color: rgba(0,0,0,.55);
+    font-size: .875rem;
+    color: rgba(0,0,0,.65);
     line-height: 1.55;
     margin-bottom: 8px;
 }
 .uu-trainer-card__tags {
     font-size: .75rem;
-    color: rgba(0,0,0,.38);
+    color: rgba(0,0,0,.45);
     margin-top: auto;
     padding-top: 8px;
 }
@@ -2057,7 +2087,9 @@ a.uu-partner-link:hover {
 
 /* ── Responsive ── */
 @media (max-width: 768px) {
-    .uu-section     { padding: 56px 24px; }
-    .uu-team-grid   { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; }
-    .uu-trainer-card { padding: 18px 14px; }
+    .uu-section          { padding: 56px 24px; }
+    .uu-team-grid--firm  { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; }
+    .uu-team-grid--trainers { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; }
+    .uu-team-grid--network  { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 14px; }
+    .uu-trainer-card     { padding: 18px 14px; }
 }
