@@ -101,6 +101,10 @@ gfp_kp(string $field, string $fallback): string    // liest _kp_* post meta
 --section-px:  clamp(1.5rem, 5vw, 4rem)   /* horizontaler Seiten-Innenabstand */
 ```
 
+> **Achtung Wurzel-Schriftgröße:** `html { font-size: 17px }` (nicht 16px). Dadurch ist der
+> Gutter `--section-px` real **25,5px (min) … 68px (max)**, nicht 24–64px. Bei `calc()`-Berechnungen
+> (Pattern B) immer daran denken: `--max-width + 2 × 68px = 1416px` bei breitem Viewport.
+
 ### Fixed Header — Clearance
 
 Die Nav ist `position: fixed; height: 64px`. Jeder Seiten-Wrapper braucht `padding-top: 64px`:
@@ -145,18 +149,33 @@ Für Flex-/Grid-Container, wo ein zusätzlicher Wrapper Kind-Selektoren brechen 
 
 **Referenz-Seite:** `page-ueber-uns.php` — diese Seite hat immer korrektes Alignment; bei Zweifeln damit vergleichen.
 
-### Betroffene CSS-Klassen (Stand Mai 2026)
+### Betroffene CSS-Klassen (Stand Juni 2026)
+
+Seit Commit `73b2659` (Juni 2026) liegen **alle** Schienen auf `--max-width` + `--section-px`.
+Verifiziert bei 1600px Viewport: Inhaltskante überall `left=160 / right=1440 / width=1280`.
 
 | Klasse | Pattern | Anmerkung |
 |--------|---------|-----------|
+| `.site-header` + `.site-nav` | A | Globale Nav (alle Seiten) |
+| `.site-footer` + `.ft-inner` | A | Globaler Footer — **war vorher 1200px** |
 | `.kurse-hero` + `.kurse-hero__inner` | A | Hero der Programmseite |
 | `.kontakt-hero` + `.kontakt-hero__inner` | A | Hero der Kontaktseite |
-| `.kontakt-layout` | direkt | `max-width: var(--max-width)` |
+| `.kontakt-layout` / `.kontakt-map` | direkt | `max-width: var(--max-width)` (`.kontakt-map` war 1100px) |
 | `.kurs-filter` | B | Filter-Buttons Programmseite |
 | `.kurse-grid` | B | Kurs-Kacheln Programmseite |
 | `.kurs-layout` | B | Haupt-Layout Kursdetailseite |
 | `.kurs-blocks` | B | Content-Blöcke Kursdetailseite |
 | `.kurs-back` | B | Zurück-Button Kursdetailseite |
+| **Startseite** (`front-page.php`): `.problem-inner`, `.clients-inner`, `.fb-header`, `.trainers-header`, `.trainer-grid`, `.stats-grid`, `.manifest-inner`, `.news-inner` | A | **waren vorher 1200/1100px mit fixem 48px-Gutter** |
+
+**⚠️ Absichtliche Ausnahmen (NICHT auf die Schiene ziehen):**
+- **Voll-randige Grids** der Startseite: das 5-farbige Fachbereiche-Grid (`.fb-grid`) und der
+  Alfred-Block (`.alfred-main` / `.alfred-intro`) laufen bewusst edge-to-edge. Nur ihre
+  *Überschriften* (`.fb-header`, Alfred-Texte) sitzen auf der 1280er-Kante.
+- **Lese-Breiten** (Textspalten, kein Layout-Raster): `p { max-width: 68ch }`,
+  `.problem-body-text` (760px), `.testi-inner` (820px), `.hero-content` (840px),
+  `.hero-body` (480px), diverse `*-sub`-Intros in `ch`. Diese begrenzen die Zeilenlänge
+  zur Lesbarkeit und bleiben absichtlich schmaler als die Schiene.
 
 ---
 
