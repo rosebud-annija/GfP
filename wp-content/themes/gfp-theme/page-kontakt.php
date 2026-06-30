@@ -22,6 +22,48 @@ $sent  = isset($_GET['sent'])  && $_GET['sent']  === '1';
 $error = isset($_GET['error']) && $_GET['error'] === '1';
 
 get_header();
+
+// ── Schema.org: LocalBusiness (Kontaktseite) + FAQPage ───────────────────────
+$schema_kontakt = [
+    '@context' => 'https://schema.org',
+    '@graph'   => [],
+];
+if ($address || $phone || $email) {
+    $schema_kontakt['@graph'][] = array_filter([
+        '@type'   => 'LocalBusiness',
+        '@id'     => home_url('/#organization'),
+        'name'    => 'GfP – Gesellschaft für Personalentwicklung',
+        'url'     => home_url('/'),
+        'email'   => $email ?: null,
+        'telephone' => $phone ?: null,
+        'address' => $address ? [
+            '@type'          => 'PostalAddress',
+            'streetAddress'  => $address,
+            'addressCountry' => 'AT',
+        ] : null,
+    ], fn($v) => $v !== null && $v !== '');
+}
+$schema_kontakt['@graph'][] = [
+    '@type'      => 'FAQPage',
+    'mainEntity' => [
+        [
+            '@type'          => 'Question',
+            'name'           => 'Für wen sind die GfP-Programme geeignet?',
+            'acceptedAnswer' => ['@type' => 'Answer', 'text' => 'Unsere Programme richten sich an Führungskräfte, Teams und Organisationen, die sich in den Bereichen Leadership, Facilitation, Teamentwicklung und Transformation weiterentwickeln möchten.'],
+        ],
+        [
+            '@type'          => 'Question',
+            'name'           => 'Wie kann ich mich für ein Seminar anmelden?',
+            'acceptedAnswer' => ['@type' => 'Answer', 'text' => 'Anmeldungen sind direkt über die jeweilige Kursseite oder per E-Mail möglich. Wir beraten euch gerne bei der Auswahl des passenden Formats.'],
+        ],
+        [
+            '@type'          => 'Question',
+            'name'           => 'Gibt es auch Inhouse-Programme?',
+            'acceptedAnswer' => ['@type' => 'Answer', 'text' => 'Ja, alle GfP-Programme sind auch als maßgeschneiderte Inhouse-Trainings direkt in eurer Organisation buchbar.'],
+        ],
+    ],
+];
+echo '<script type="application/ld+json">' . wp_json_encode($schema_kontakt, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . '</script>' . "\n";
 ?>
 
 <div class="kontakt-page" style="padding-top: 64px;">

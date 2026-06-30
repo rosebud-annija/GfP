@@ -110,24 +110,6 @@ $cta_headline_l2 = gfp_hp('cta_headline_l2', 'LIKE A HERO?');
 // Zahlen-Sektion
 $stats_label = gfp_hp('stats_label', 'GfP in Zahlen');
 
-// Alfred
-$alfred_badge              = gfp_hp('alfred_badge',              'AL');
-$alfred_intro_h            = gfp_hp('alfred_intro_h',            'Meet ALFRED');
-$alfred_intro_p            = gfp_hp('alfred_intro_p',            'Dein persönlicher Guide zu deinem GfP-Format. Kein Cape, kein Bullshit — nur die richtigen Fragen.');
-$alfred_intro_right_strong = gfp_hp('alfred_intro_right_strong', 'Dein perfektes Format');
-$alfred_intro_right_sub    = gfp_hp('alfred_intro_right_sub',    '3 Schritte · 2 Minuten · 0 Unverbindlichkeiten');
-$alfred_main_h             = gfp_hp('alfred_main_h',             'DO YOU FEEL LIKE A HERO?');
-$alfred_main_p             = gfp_hp('alfred_main_p',             'Alfred findet heraus, was dich bewegt – und führt dich direkt zu dem Format, das wirklich passt. Nicht der Katalog. Dein Ding.');
-$alfred_step1_t            = gfp_hp('alfred_step1_t',            'Worum geht\'s dir gerade?');
-$alfred_step1_s            = gfp_hp('alfred_step1_s',            'Dein Anliegen als Ausgangspunkt');
-$alfred_step2_t            = gfp_hp('alfred_step2_t',            'Wie willst du arbeiten?');
-$alfred_step2_s            = gfp_hp('alfred_step2_s',            'Academy, Inhouse, Coaching oder Tools');
-$alfred_step3_t            = gfp_hp('alfred_step3_t',            'Dein perfektes Format');
-$alfred_step3_s            = gfp_hp('alfred_step3_s',            'Kuratiert — nicht der ganze Katalog');
-$alfred_opening_msg        = gfp_hp('alfred_opening_msg',        'Guten Tag. Ich bin Alfred – kein Held, aber unverzichtbar. Worum geht\'s dir gerade?');
-$alfred_chips_raw          = gfp_hp('alfred_chips',              "Ich will besser führen\nMein Team braucht Entwicklung\nWir stehen vor einer Veränderung\nMeetings und Workshops verbessern\nIch will persönlich wachsen");
-$alfred_chips              = array_filter(array_map('trim', explode("\n", $alfred_chips_raw)));
-
 // Marquee
 $marquee_label     = gfp_hp('marquee_label',  'Weniger Bullshit, mehr Impact.');
 $marquee_items_raw = gfp_hp('marquee_items',  "ADEG\nBestattung Wien\nBILLA\nInfineon\nBoehringer Ingelheim\nWiener Linien\nAustria Trend Hotels\nRaiffeisen");
@@ -150,95 +132,59 @@ $manifest_intro = gfp_hp('manifest_intro', 'Was uns antreibt. Was uns ausmacht. 
 
 
 get_header();
+
+// ── Schema.org: Organization + LocalBusiness ──────────────────────────────────
+$schema_email    = gfp_hp('ft_email', '');
+$schema_linkedin = gfp_hp('ft_linkedin', '');
+$schema_sameAs   = array_values(array_filter([
+    $schema_linkedin,
+    gfp_hp('ft_instagram', ''),
+    gfp_hp('ft_youtube', ''),
+], fn($v) => $v && $v !== '#'));
+$schema_org = [
+    '@context' => 'https://schema.org',
+    '@graph'   => [
+        [
+            '@type'       => ['Organization', 'LocalBusiness'],
+            '@id'         => home_url('/#organization'),
+            'name'        => 'GfP – Gesellschaft für Personalentwicklung',
+            'url'         => home_url('/'),
+            'logo'        => [
+                '@type' => 'ImageObject',
+                'url'   => get_theme_file_uri('assets/img/logo.png'),
+            ],
+            'description' => 'Weiterbildungsorganisation für Leadership, Facilitation, Teamentwicklung und Organisationsentwicklung in Österreich.',
+            'address'     => [
+                '@type'           => 'PostalAddress',
+                'addressCountry'  => 'AT',
+                'addressLocality' => 'Wien',
+            ],
+            'email'       => $schema_email ?: null,
+            'sameAs'      => $schema_sameAs,
+        ],
+    ],
+];
+echo '<script type="application/ld+json">' . wp_json_encode($schema_org, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . '</script>' . "\n";
 ?>
 
 <!-- ══ 1. HERO ════════════════════════════════════════════════════════════════ -->
 <section id="hero">
-    <div class="hero-content">
-        <p class="hero-eyebrow"><?php echo esc_html($hero_eyebrow); ?></p>
-        <h1 class="hero-title display"><?php echo nl2br(esc_html($hero_titel)); ?></h1>
-        <p class="hero-sub"><?php echo nl2br(esc_html($hero_sub ?: 'Nicht unbesiegbar. Nur unaufhaltbar.')); ?></p>
-        <p class="hero-body"><?php echo nl2br(esc_html($hero_text)); ?></p>
-        <div class="hero-ctas">
-            <a href="<?php echo esc_url($hero_cta_url ?: get_post_type_archive_link('kurs')); ?>" class="btn-dark">
-                <?php echo esc_html($hero_cta_label ?: 'Unsere Programme'); ?> →
-            </a>
-            <a href="#alfred" class="btn-outline">Alfred fragen</a>
-        </div>
-    </div>
-</section>
-
-<!-- ══ 2. ALFRED ══════════════════════════════════════════════════════════════ -->
-<section id="alfred">
-    <div class="alfred-intro">
-        <div class="alfred-intro-left">
-            <div class="alfred-badge"><span class="alfred-badge-inner"><?php echo esc_html($alfred_badge); ?></span></div>
-            <div class="alfred-intro-text">
-                <h3><?php echo esc_html($alfred_intro_h); ?></h3>
-                <p><?php echo esc_html($alfred_intro_p); ?></p>
-            </div>
-        </div>
-        <div class="alfred-intro-right">
-            <strong><?php echo esc_html($alfred_intro_right_strong); ?></strong>
-            <?php echo esc_html($alfred_intro_right_sub); ?>
-        </div>
-    </div>
-
-    <div class="alfred-main">
-        <div class="alfred-left">
-            <h2 class="display"><?php echo esc_html($alfred_main_h); ?></h2>
-            <p><?php echo esc_html($alfred_main_p); ?></p>
-            <div class="alfred-steps">
-                <div class="alfred-step active" id="as1">
-                    <div class="alfred-step-dot">1</div>
-                    <div class="alfred-step-label">
-                        <strong><?php echo esc_html($alfred_step1_t); ?></strong>
-                        <span><?php echo esc_html($alfred_step1_s); ?></span>
-                    </div>
-                </div>
-                <div class="alfred-step" id="as2">
-                    <div class="alfred-step-dot">2</div>
-                    <div class="alfred-step-label">
-                        <strong><?php echo esc_html($alfred_step2_t); ?></strong>
-                        <span><?php echo esc_html($alfred_step2_s); ?></span>
-                    </div>
-                </div>
-                <div class="alfred-step" id="as3">
-                    <div class="alfred-step-dot">3</div>
-                    <div class="alfred-step-label">
-                        <strong><?php echo esc_html($alfred_step3_t); ?></strong>
-                        <span><?php echo esc_html($alfred_step3_s); ?></span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="alfred-right">
-            <div class="chat-topbar">
-                <div class="chat-topbar-left">
-                    <div class="chat-av"><?php echo esc_html($alfred_badge); ?></div>
-                    <div>
-                        <div class="chat-name">Alfred</div>
-                        <div class="chat-status">Bereit</div>
-                    </div>
-                </div>
-                <div class="chat-topbar-meta">by GfP</div>
-            </div>
-
-            <div class="chat-msgs" id="chatMsgs"></div>
-
-            <div class="chat-opts" id="chatOpts"></div>
-
-            <div class="chat-input-row">
-                <input type="text" class="cinput" id="chatInput" placeholder="Oder schreib direkt zu Alfred…">
-                <button class="creset" id="chatReset" title="Neu starten">↺</button>
-                <button class="csend" id="chatSend" title="Senden">→</button>
+    <div class="hero-rail">
+        <div class="hero-content">
+            <p class="hero-eyebrow"><?php echo esc_html($hero_eyebrow); ?></p>
+            <h1 class="hero-title display"><?php echo nl2br(esc_html($hero_titel)); ?></h1>
+            <p class="hero-sub"><?php echo nl2br(esc_html($hero_sub ?: 'Nicht unbesiegbar. Nur unaufhaltbar.')); ?></p>
+            <p class="hero-body"><?php echo nl2br(esc_html($hero_text)); ?></p>
+            <div class="hero-ctas">
+                <a href="<?php echo esc_url($hero_cta_url ?: get_post_type_archive_link('kurs')); ?>" class="btn-dark">
+                    <?php echo esc_html($hero_cta_label ?: 'Unsere Programme'); ?> →
+                </a>
             </div>
         </div>
     </div>
 </section>
 
-<!-- ══ 3. PROBLEM ════════════════════════════════════════════════════════════ -->
+<!-- ══ 2. PROBLEM ════════════════════════════════════════════════════════════ -->
 <section id="problem" class="fu">
     <div class="problem-inner">
         <div class="problem-headline-row">
@@ -257,26 +203,21 @@ get_header();
     </div>
 </section>
 
-<!-- ══ 4. MARQUEE ════════════════════════════════════════════════════════════ -->
-<div id="marquee">
-    <p class="marquee-label"><?php echo esc_html($marquee_label); ?></p>
-    <div class="marquee-track">
-        <?php
-        for ($i = 0; $i < 2; $i++) :
-            foreach ($marquee_items as $item) : ?>
-                <span class="marquee-item">
-                    <?php echo esc_html($item); ?> <span class="sep">★</span>
-                </span>
-            <?php endforeach;
-        endfor; ?>
-    </div>
-</div>
-
-<div id="clients">
+<!-- ══ 4. CLIENTS ════════════════════════════════════════════════════════════ -->
+<div id="clients" class="fu">
     <div class="clients-inner">
-        <?php foreach ($clients as $logo) : ?>
-            <span class="clogo"><?php echo esc_html($logo); ?></span>
-        <?php endforeach; ?>
+        <p class="clients-headline"><?php echo esc_html($marquee_label); ?></p>
+        <div class="clients-logos">
+            <?php
+            $clients_arr = array_values($clients);
+            $clients_count = count($clients_arr);
+            foreach ($clients_arr as $i => $logo) : ?>
+                <span class="clogo"><?php echo esc_html($logo); ?></span>
+                <?php if ($i < $clients_count - 1) : ?>
+                    <span class="clogo-sep">★</span>
+                <?php endif; ?>
+            <?php endforeach; ?>
+        </div>
     </div>
 </div>
 
@@ -480,248 +421,13 @@ get_header();
     </div>
 </section>
 
-<!-- ══ SCROLL-FADE & ALFRED-CHAT JS ══════════════════════════════════════════ -->
-<?php
-$_alfred_kurse = [];
-$_kurs_posts   = get_posts(['post_type' => 'kurs', 'posts_per_page' => -1, 'post_status' => 'publish', 'orderby' => 'title', 'order' => 'ASC']);
-foreach ($_kurs_posts as $_k) {
-    $_fb      = gfp_get_fachbereich($_k->ID);
-    $_fb_name = $_fb ? $_fb->name : '';
-    $_fb_norm = $_fb_name ? mb_strtolower(html_entity_decode($_fb_name, ENT_QUOTES | ENT_HTML5, 'UTF-8'), 'UTF-8') : '';
-    $_farbe   = gfp_farbe_hex(gfp_get_kurs_farbe($_k->ID)) ?: '#27348b';
-    $_alfred_kurse[] = [
-        'title'   => $_k->post_title,
-        'format'  => get_post_meta($_k->ID, '_kurs_format', true) ?: '',
-        'fb'      => $_fb_name,
-        'fb_norm' => $_fb_norm,
-        'farbe'   => $_farbe,
-        'excerpt' => wp_strip_all_tags(get_the_excerpt($_k)),
-        'url'     => get_permalink($_k->ID),
-    ];
-}
-unset($_kurs_posts, $_k, $_fb, $_fb_name, $_fb_norm, $_farbe);
-?>
+<!-- ══ SCROLL-FADE JS ════════════════════════════════════════════════════════ -->
 <script>
 const fuEls = document.querySelectorAll('.fu');
 const obs = new IntersectionObserver(entries => {
     entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('vis'); obs.unobserve(e.target); } });
 }, { threshold: 0.1 });
 fuEls.forEach(el => obs.observe(el));
-
-const ALFRED_BADGE = <?php echo json_encode($alfred_badge, JSON_UNESCAPED_UNICODE); ?>;
-const OPENING_MSG  = <?php echo json_encode($alfred_opening_msg, JSON_UNESCAPED_UNICODE); ?>;
-const CHIPS        = <?php echo json_encode(array_values($alfred_chips), JSON_UNESCAPED_UNICODE); ?>;
-const KURSE        = <?php echo json_encode($_alfred_kurse, JSON_UNESCAPED_UNICODE); ?>;
-const KURSE_URL    = <?php echo json_encode(get_post_type_archive_link('kurs') ?: '/kurse/', JSON_UNESCAPED_UNICODE); ?>;
-
-// Fachbereich-Farbzuordnung — nur für Ergebniskarten, kein Auswahlschritt
-const FB_COLOR = {
-    'leadership & führung':          '#0073BC',
-    'facilitation & moderation':     '#23B0A5',
-    'teams & collaboration':         '#F18712',
-    'organisation & transformation': '#9E4493',
-    'personality & skills':          '#50C1E0',
-};
-const FB_DISPLAY = {
-    'leadership & führung':          'Leadership & Führung',
-    'facilitation & moderation':     'Facilitation & Moderation',
-    'teams & collaboration':         'Teams & Collaboration',
-    'organisation & transformation': 'Organisation & Transformation',
-    'personality & skills':          'Personality & Skills',
-};
-
-// Keywords pro Fachbereich — für Soft-Scoring (keine harte Filterung)
-const FB_KEYWORDS = {
-    'leadership & führung':          ['führ','leadership','leitung','chef','vorgesetzt','entscheid','delegier','motivat','management'],
-    'facilitation & moderation':     ['meeting','workshop','moderat','facilit','sitzung','besprechung','seminar','storytell','präsent'],
-    'teams & collaboration':         ['team','zusammenarbeit','gruppe','kooperat','homeoffice','remote','kolleg'],
-    'organisation & transformation': ['veränder','transformation','change','organis','wandel','innovation','agil','learning','recruiting','hr','pe'],
-    'personality & skills':          ['persönlich','skill','kompetenz','kommunikation','auftreten','rhetorik','stress','resilienz','burnout','zeitmanag','selbst'],
-};
-
-// Kontext-Keywords — boosten bestimmte Kurstypen in den Ergebnissen
-const CONTEXT_BOOST = {
-    akut:        ['kompakt', 'online', 'toolbox', 'werkstatt', 'praxis', 'intensiv', 'tools'],
-    langfristig: ['programm', 'qualifizierung', 'parcours', 'expedition', 'zertifikat', 'lerngang', 'lern'],
-    projekt:     ['best practice', 'action learning', 'challenge', 'innovation', 'startup', 'strateg', 'business model'],
-};
-
-const msgs  = document.getElementById('chatMsgs');
-const opts  = document.getElementById('chatOpts');
-const input = document.getElementById('chatInput');
-const send  = document.getElementById('chatSend');
-const reset = document.getElementById('chatReset');
-
-let step     = 0;
-let _topic   = '';
-let _format  = '';
-let _context = '';
-
-function syncSteps() {
-    const s = [document.getElementById('as1'), document.getElementById('as2'), document.getElementById('as3')];
-    if (!s[0]) return;
-    s.forEach(el => el.classList.remove('active', 'done'));
-    if      (step === 0) { s[0].classList.add('active'); }
-    else if (step === 1) { s[0].classList.add('done'); s[1].classList.add('active'); }
-    else if (step === 2) { s[0].classList.add('done'); s[1].classList.add('done'); s[2].classList.add('active'); }
-    else                 { s[0].classList.add('done'); s[1].classList.add('done'); s[2].classList.add('done'); }
-}
-
-function addMsg(html, type) {
-    const d = document.createElement('div');
-    d.className = 'msg ' + type;
-    d.innerHTML = '<div class="av">' + (type === 'b' ? ALFRED_BADGE : 'Du') + '</div><div class="bbl">' + html + '</div>';
-    msgs.appendChild(d);
-    msgs.scrollTop = msgs.scrollHeight;
-}
-
-function typing(cb) {
-    const d = document.createElement('div');
-    d.className = 'msg b'; d.id = 'typing';
-    d.innerHTML = '<div class="av">' + ALFRED_BADGE + '</div><div class="bbl"><div class="typing"><span></span><span></span><span></span></div></div>';
-    msgs.appendChild(d);
-    msgs.scrollTop = msgs.scrollHeight;
-    setTimeout(() => { d.remove(); cb(); }, 900);
-}
-
-function showChips(list, handler) {
-    opts.innerHTML = '';
-    list.forEach(label => {
-        const btn = document.createElement('button');
-        btn.className = 'copt';
-        btn.textContent = label;
-        btn.onclick = () => (handler || handleInput)(label);
-        opts.appendChild(btn);
-    });
-}
-
-// Stem-Match: direkter Treffer oder Stammform (~70% der Zeichen, mind. 4)
-function stemMatch(word, text) {
-    if (word.length < 3) return 0;
-    if (text.includes(word)) return 6;
-    const stem = word.slice(0, Math.max(4, Math.round(word.length * 0.7)));
-    return (stem.length >= 4 && text.includes(stem)) ? 3 : 0;
-}
-
-function scoreKurs(k, topic, contextKey) {
-    const t          = topic.toLowerCase();
-    const titleLow   = k.title.toLowerCase();
-    const excerptLow = (k.excerpt || '').toLowerCase();
-    let s = 0;
-
-    // Fachbereich-Soft-Boost: Anliegen passt thematisch zum Fachbereich des Kurses
-    (FB_KEYWORDS[k.fb_norm] || []).forEach(kw => { if (t.includes(kw)) s += 4; });
-
-    // Wort-für-Wort im Kurstitel (Stamm-basiert, 3× Gewicht) und Excerpt
-    const words = t.replace(/[^\wäöüß\s]/g, ' ').trim().split(/\s+/).filter(w => w.length > 2);
-    words.forEach(w => {
-        s += stemMatch(w, titleLow) * 3;
-        s += stemMatch(w, excerptLow);
-    });
-
-    // Kontext-Boost: passende Kurstypen nach Dringlichkeit/Rahmen
-    (CONTEXT_BOOST[contextKey] || []).forEach(kw => { if (titleLow.includes(kw)) s += 5; });
-
-    return s;
-}
-
-function fmtKey(val) {
-    const v = val.toLowerCase();
-    if (v.includes('academy'))    return 'academy';
-    if (v.includes('inhouse'))    return 'inhouse';
-    if (v.includes('coaching'))   return 'coaching';
-    if (v.includes('consulting')) return 'consulting';
-    return '';
-}
-
-function ctxKey(val) {
-    const v = val.toLowerCase();
-    if (v.includes('akut') || v.includes('bald') || v.includes('schnell')) return 'akut';
-    if (v.includes('langfristig') || v.includes('programm'))               return 'langfristig';
-    if (v.includes('projekt'))                                              return 'projekt';
-    return '';
-}
-
-function showRecommendations() {
-    const fmt = fmtKey(_format);
-    const ctx = ctxKey(_context);
-
-    // Format-Filter mit Fallback: zu wenig Treffer → alle Formate zulassen
-    let pool = fmt ? KURSE.filter(k => k.format === fmt) : KURSE;
-    if (pool.length < 5) pool = KURSE;
-
-    const scored = pool
-        .map(k => ({ ...k, _s: scoreKurs(k, _topic, ctx) }))
-        .sort((a, b) => b._s - a._s || Math.random() - 0.5);
-    const top = scored.slice(0, 3);
-
-    const cards = top.map(k => {
-        const color      = k.farbe || FB_COLOR[k.fb_norm] || '#27348b';
-        const fbLabel    = FB_DISPLAY[k.fb_norm] || '';
-        const fmtLabel   = ({ academy: 'Academy', inhouse: 'Inhouse', coaching: 'Coaching', consulting: 'Consulting' })[k.format] || '';
-        const tagText    = [fbLabel, fmtLabel].filter(Boolean).join(' · ');
-        const desc       = k.excerpt ? k.excerpt.substring(0, 100).trimEnd() + '…' : '';
-        return '<a href="' + k.url + '" class="alfred-kurs-card" style="--akc-color:' + color + '" target="_blank" rel="noopener">'
-            + (tagText ? '<span class="akc-fb" style="color:' + color + '">' + tagText + '</span>' : '')
-            + '<strong class="akc-title">' + k.title + '</strong>'
-            + (desc ? '<span class="akc-desc">' + desc + '</span>' : '')
-            + '</a>';
-    }).join('');
-
-    const archiveUrl = KURSE_URL;
-    const allLink    = '<a href="' + archiveUrl + '" class="akc-all-link">Alle 120 Programme ansehen →</a>';
-    addMsg('Hier sind drei passende Programme:<br><br>' + cards + allLink, 'b');
-    input.disabled = true;
-    send.disabled  = true;
-}
-
-function handleInput(val) {
-    if (!val.trim() || step >= 3) return;
-    addMsg(val, 'u');
-    opts.innerHTML = '';
-    input.value = '';
-    step++;
-    syncSteps();
-
-    typing(() => {
-        if (step === 1) {
-            _topic = val;
-            addMsg('Wie möchtest du das angehen?', 'b');
-            showChips(['Coaching — 1:1 begleitet', 'Academy — offenes Seminar', 'Inhouse — bei uns im Unternehmen']);
-        } else if (step === 2) {
-            _format = val;
-            addMsg('Eine Frage noch: Was ist dein Rahmen?', 'b');
-            showChips([
-                'Akuter Bedarf — möglichst bald',
-                'Langfristige Entwicklung — wir denken in Programmen',
-                'Konkretes Projekt läuft gerade',
-            ]);
-        } else {
-            _context = val;
-            showRecommendations();
-        }
-    });
-}
-
-function resetChat() {
-    msgs.innerHTML = '';
-    opts.innerHTML = '';
-    input.disabled = false;
-    send.disabled  = false;
-    step           = 0;
-    _topic         = '';
-    _format        = '';
-    _context       = '';
-    syncSteps();
-    addMsg(OPENING_MSG, 'b');
-    showChips(CHIPS);
-}
-
-send.addEventListener('click', () => handleInput(input.value));
-if (reset) reset.addEventListener('click', resetChat);
-input.addEventListener('keydown', e => { if (e.key === 'Enter') handleInput(input.value); });
-
-resetChat();
 </script>
 
 <?php get_footer(); ?>

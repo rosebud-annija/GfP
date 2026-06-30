@@ -28,12 +28,13 @@ add_action('save_post', function (int $post_id): void {
     if (!wp_verify_nonce(wp_unslash($_POST['_gfp_startseite_nonce']), 'gfp_startseite_save')) return;
     if (!current_user_can('edit_page', $post_id)) return;
 
-    gfp_do_save_startseite();
+    gfp_do_save_startseite($post_id);
 });
 
 // ─── Speicher-Funktion ────────────────────────────────────────────────────────
 
-function gfp_do_save_startseite(): void {
+function gfp_do_save_startseite(int $post_id = 0): void {
+    if (!$post_id) $post_id = (int) get_option('page_on_front');
     $text_fields = [
         'hp_hero_eyebrow', 'hp_hero_cta_label',
         'hp_cta_headline_l1', 'hp_cta_headline_l2',
@@ -80,6 +81,19 @@ function gfp_do_save_startseite(): void {
         $val = $_POST[$f] ?? '';
         if (is_array($val)) $val = '';
         update_option('gfp_' . $f, esc_url_raw(wp_unslash($val)));
+    }
+
+    // SEO-Felder als Post Meta speichern (kompatibel mit Yoast)
+    if ($post_id) {
+        $seo_fields = [
+            'hp_seo_title' => '_yoast_wpseo_title',
+            'hp_seo_desc'  => '_yoast_wpseo_metadesc',
+            'hp_seo_kw'    => '_yoast_wpseo_focuskw',
+        ];
+        foreach ($seo_fields as $field => $meta_key) {
+            $val = sanitize_text_field(wp_unslash($_POST[$field] ?? ''));
+            update_post_meta($post_id, $meta_key, $val);
+        }
     }
 
     // Fachbereich-Farben auch auf Taxonomy-Terms schreiben
@@ -248,6 +262,7 @@ function gfp_render_startseite_metabox(WP_Post $post): void {
             <div class="gfp-tab" data-panel="hp-manifest">📜 Manifest</div>
             <div class="gfp-tab" data-panel="hp-trainer">👥 Trainer</div>
             <div class="gfp-tab" data-panel="hp-footer">🔗 Footer</div>
+            <div class="gfp-tab" data-panel="hp-seo">🔍 SEO</div>
         </div>
 
         <!-- ── Hero ── -->
@@ -573,6 +588,55 @@ function gfp_render_startseite_metabox(WP_Post $post): void {
                 <input type="url" name="hp_ft_youtube" id="hp_ft_youtube"
                        value="<?php echo esc_attr($ft_youtube); ?>" placeholder="https://youtube.com/@…">
             </div>
+        </div>
+
+        <div class="gfp-panel" id="panel-hp-seo">
+            <?php
+            $seo_title = get_post_meta($post->ID, '_yoast_wpseo_title', true);
+            $seo_desc  = get_post_meta($post->ID, '_yoast_wpseo_metadesc', true);
+            $seo_kw    = get_post_meta($post->ID, '_yoast_wpseo_focuskw', true);
+            ?>
+            <p style="font-size:13px;color:#666;margin-bottom:16px;">Diese Felder werden direkt in Yoast SEO gespeichert und in Google-Suchergebnissen angezeigt.</p>
+            <div class="gfp-field">
+                <label for="hp_seo_title">SEO-Titel <span style="color:#999;font-weight:400;">(max. 60 Zeichen)</span></label>
+                <input type="text" name="hp_seo_title" id="hp_seo_title" maxlength="100"
+                       value="<?php echo esc_attr($seo_title); ?>"
+                       placeholder="GfP – Leadership &amp; Personalentwicklung Wien | Seminare &amp; Trainings"
+                       style="width:100%;">
+                <span id="hp_seo_title_count" style="font-size:12px;color:#999;"></span>
+            </div>
+            <div class="gfp-field" style="margin-top:16px;">
+                <label for="hp_seo_desc">Meta-Beschreibung <span style="color:#999;font-weight:400;">(max. 155 Zeichen)</span></label>
+                <textarea name="hp_seo_desc" id="hp_seo_desc" rows="3" maxlength="300"
+                          placeholder="Wir entwickeln Menschen, Teams und Organisationen – seit 30 Jahren. Leadership, Facilitation, Teamentwicklung &amp; Transformation. Jetzt Programm finden."
+                          style="width:100%;"><?php echo esc_textarea($seo_desc); ?></textarea>
+                <span id="hp_seo_desc_count" style="font-size:12px;color:#999;"></span>
+            </div>
+            <div class="gfp-field" style="margin-top:16px;">
+                <label for="hp_seo_kw">Fokus-Keyphrase</label>
+                <input type="text" name="hp_seo_kw" id="hp_seo_kw"
+                       value="<?php echo esc_attr($seo_kw); ?>"
+                       placeholder="Personalentwicklung Wien"
+                       style="width:100%;">
+            </div>
+            <script>
+            (function() {
+                function counter(inputId, countId, max) {
+                    var el = document.getElementById(inputId);
+                    var ct = document.getElementById(countId);
+                    if (!el || !ct) return;
+                    function update() {
+                        var len = el.value.length;
+                        ct.textContent = len + ' / ' + max + ' Zeichen';
+                        ct.style.color = len > max ? '#d63638' : (len > max * 0.9 ? '#dba617' : '#999');
+                    }
+                    el.addEventListener('input', update);
+                    update();
+                }
+                counter('hp_seo_title', 'hp_seo_title_count', 60);
+                counter('hp_seo_desc',  'hp_seo_desc_count',  155);
+            })();
+            </script>
         </div>
 
     </div><!-- .gfp-hp -->

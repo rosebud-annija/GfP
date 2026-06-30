@@ -47,6 +47,35 @@ $infoboxen = array_filter([
 ]);
 
 get_header();
+
+// ── Schema.org: Course ────────────────────────────────────────────────────────
+$schema_kurs = [
+    '@context'    => 'https://schema.org',
+    '@type'       => 'Course',
+    'name'        => get_the_title(),
+    'description' => wp_strip_all_tags(get_the_excerpt() ?: wp_trim_words(get_the_content(), 40)),
+    'url'         => get_permalink(),
+    'provider'    => [
+        '@type' => 'Organization',
+        '@id'   => home_url('/#organization'),
+        'name'  => 'GfP – Gesellschaft für Personalentwicklung',
+    ],
+    'educationalLevel' => $voraussetzungen ?: null,
+    'teaches'          => $lernziele ? implode(', ', array_map('wp_strip_all_tags', (array) $lernziele)) : null,
+];
+if ($investition) {
+    $schema_kurs['offers'] = [
+        '@type'         => 'Offer',
+        'price'         => $investition,
+        'priceCurrency' => 'EUR',
+        'availability'  => 'https://schema.org/InStock',
+    ];
+}
+if ($kommend) {
+    $schema_kurs['startDate'] = reset($kommend)['datum'] ?? null;
+}
+$schema_kurs = array_filter($schema_kurs, fn($v) => $v !== null && $v !== '');
+echo '<script type="application/ld+json">' . wp_json_encode($schema_kurs, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . '</script>' . "\n";
 ?>
 
 <div class="kurs-page" style="padding-top: 64px;">

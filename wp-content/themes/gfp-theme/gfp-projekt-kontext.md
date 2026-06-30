@@ -97,13 +97,13 @@ gfp_kp(string $field, string $fallback): string    // liest _kp_* post meta
 ## CSS Design-Tokens (`:root`)
 
 ```css
---max-width:   1280px
+--max-width:   1600px   /* Juni 2026 von 1280px erhöht — gilt global (Startseite + Unterseiten) */
 --section-px:  clamp(1.5rem, 5vw, 4rem)   /* horizontaler Seiten-Innenabstand */
 ```
 
 > **Achtung Wurzel-Schriftgröße:** `html { font-size: 17px }` (nicht 16px). Dadurch ist der
 > Gutter `--section-px` real **25,5px (min) … 68px (max)**, nicht 24–64px. Bei `calc()`-Berechnungen
-> (Pattern B) immer daran denken: `--max-width + 2 × 68px = 1416px` bei breitem Viewport.
+> (Pattern B) immer daran denken: `--max-width + 2 × 68px = 1736px` bei breitem Viewport.
 
 ### Fixed Header — Clearance
 
@@ -149,33 +149,98 @@ Für Flex-/Grid-Container, wo ein zusätzlicher Wrapper Kind-Selektoren brechen 
 
 **Referenz-Seite:** `page-ueber-uns.php` — diese Seite hat immer korrektes Alignment; bei Zweifeln damit vergleichen.
 
-### Betroffene CSS-Klassen (Stand Juni 2026)
+### Betroffene CSS-Klassen (Stand Juni 2026 — nach Layout-Überarbeitung)
 
-Seit Commit `73b2659` (Juni 2026) liegen **alle** Schienen auf `--max-width` + `--section-px`.
-Verifiziert bei 1600px Viewport: Inhaltskante überall `left=160 / right=1440 / width=1280`.
+**`--max-width: 1600px`** (global). Pattern B outer = `calc(1600px + 2 × var(--section-px))` = **1736px** (bei max. padding 68px, d.h. bei Viewport ≥ 1400px). Fast alle Sektionen liegen auf der Schiene. Full-bleed (echtes edge-to-edge) sind nur die Hintergründe von `#hero` und `#cta-hero`, der Bildstreifen `#image-hero` sowie `.kontakt-map` — ihre Inhalte sind dennoch via Pattern B auf der Schiene zentriert.
 
 | Klasse | Pattern | Anmerkung |
 |--------|---------|-----------|
 | `.site-header` + `.site-nav` | A | Globale Nav (alle Seiten) |
-| `.site-footer` + `.ft-inner` | A | Globaler Footer — **war vorher 1200px** |
+| `.site-footer` + `.ft-inner` | A | Globaler Footer |
 | `.kurse-hero` + `.kurse-hero__inner` | A | Hero der Programmseite |
 | `.kontakt-hero` + `.kontakt-hero__inner` | A | Hero der Kontaktseite |
-| `.kontakt-layout` / `.kontakt-map` | direkt | `max-width: var(--max-width)` (`.kontakt-map` war 1100px) |
+| `.kontakt-layout` | B | Adresse/Telefon/E-Mail — linksbündig auf der Schiene |
+| `.kontakt-map` | — | **Full-bleed** (iframe randlos) |
 | `.kurs-filter` | B | Filter-Buttons Programmseite |
 | `.kurse-grid` | B | Kurs-Kacheln Programmseite |
 | `.kurs-layout` | B | Haupt-Layout Kursdetailseite |
 | `.kurs-blocks` | B | Content-Blöcke Kursdetailseite |
 | `.kurs-back` | B | Zurück-Button Kursdetailseite |
-| **Startseite** (`front-page.php`): `.problem-inner`, `.clients-inner`, `.fb-header`, `.trainers-header`, `.trainer-grid`, `.stats-grid`, `.manifest-inner`, `.news-inner` | A | **waren vorher 1200/1100px mit fixem 48px-Gutter** |
+| **Startseite — Hero:** `#hero` bg full-bleed + `.hero-rail` Inhalt | B | `#hero` ohne max-width; `.hero-rail` ist Pattern B |
+| **Startseite — Clients:** `.clients-inner` | A | `max-width: var(--max-width); margin: 0 auto` |
+| **Startseite — Fachbereiche:** `.fb-header` + `.fb-grid` | B | **Beide** auf Pattern B — kein edge-to-edge mehr |
+| **Startseite — Trainer:** `.trainers-header` | B | Korrigiert von falschem Pattern A (Doppel-Indent) zu Pattern B |
+| **Startseite — CTA:** `#cta-hero` bg full-bleed + `.cta-hero-inner` Inhalt | B | Gleiche Logik wie Hero |
+| **Startseite — Rest:** `.problem-inner`, `.trainer-grid`, `.stats-grid`, `.manifest-inner`, `.news-inner` | A | Zentrierte Schienen auf `--max-width` |
 
 **⚠️ Absichtliche Ausnahmen (NICHT auf die Schiene ziehen):**
-- **Voll-randige Grids** der Startseite: das 5-farbige Fachbereiche-Grid (`.fb-grid`) und der
-  Alfred-Block (`.alfred-main` / `.alfred-intro`) laufen bewusst edge-to-edge. Nur ihre
-  *Überschriften* (`.fb-header`, Alfred-Texte) sitzen auf der 1280er-Kante.
+- **Full-bleed Hintergründe:** `#hero` und `#cta-hero` sind echte Vollbreiten-Sektionen (Gradient-Hintergrund), aber ihr Inhalt liegt auf Pattern B. `#image-hero` (Bildstreifen) und `.kontakt-map` sind ebenfalls voll-randig ohne Inhalt-Wrapper.
 - **Lese-Breiten** (Textspalten, kein Layout-Raster): `p { max-width: 68ch }`,
   `.problem-body-text` (760px), `.testi-inner` (820px), `.hero-content` (840px),
-  `.hero-body` (480px), diverse `*-sub`-Intros in `ch`. Diese begrenzen die Zeilenlänge
-  zur Lesbarkeit und bleiben absichtlich schmaler als die Schiene.
+  `.hero-body` (480px). Diese begrenzen die Zeilenlänge zur Lesbarkeit und bleiben absichtlich schmaler als die Schiene.
+
+---
+
+## Startseiten-Sektionen (`front-page.php`) — Stand Juni 2026
+
+### 1 · Hero (`#hero`)
+- **Hintergrund:** full-bleed Radial-Gradient (orange-rot), kein `max-width`
+- **Inhalt:** `<div class="hero-rail">` → Pattern B, `max-width: calc(var(--max-width) + 2 * var(--section-px))`
+- **Inhalt-Wrapper:** `<div class="hero-content">` limitiert Text auf `max-width: 840px`
+- **Animation:** `@keyframes heroIn` — `opacity 0 + translateY(14px)` → normal, 0.9s spring
+- **PHP-Vars:** `$hero_eyebrow`, `$hero_titel`, `$hero_sub`, `$hero_text`, `$hero_cta_label`, `$hero_cta_url`
+
+### 2 · Problem (`#problem`)
+- Pattern A mit `.problem-inner`; unverändert
+
+### 3 · Alfred / Testimonials
+- **Entfernt:** Alfred-Sektion und zugehörige CSS wurden vollständig entfernt.
+
+### 4 · Clients (`#clients`)
+- **Hintergrund:** `var(--black)`, kein Laufband mehr
+- **Layout:** `.clients-inner` (Pattern A, `max-width: var(--max-width)`)
+- **Headline:** `.clients-headline` zeigt `$marquee_label` (z. B. „Weniger Bullshit, mehr Impact.") — zentriert, `font-size: var(--fs-h2)`
+- **Logos:** Flex-Wrap-Reihe; je ein `<span class="clogo">` pro Kundenname, dazwischen `<span class="clogo-sep">★</span>` (nach jedem Logo außer dem letzten)
+- **PHP-Vars:** `$marquee_label` (Admin-Tab), `$clients` (Array; `$marquee_items` wird nicht mehr ausgegeben, bleibt aber definiert)
+
+### 5 · Fachbereiche (`#fachbereiche`)
+- **Layout:** 5-Spalten-Card-Grid (kein Sticky-Scroll mehr)
+- **Kopfzeile:** `.fb-header` → Pattern B; enthält `<h2 class="display">` + Intro-Text
+- **Grid:** `.fb-grid` → Pattern B (`max-width: calc(var(--max-width) + 2 * var(--section-px))`), `display: grid; grid-template-columns: repeat(5, 1fr)`
+- **Cards:** `.fb-card` mit CSS-Custom-Property `--fb-farbe` (Hex aus ACF/PHP). Unterer Farbstreifen via `::after`. Hintergrund `color-mix(in srgb, var(--fb-farbe) 16%, #0d0d0d)`
+- **Font-Sizes:** alle `.fb-card-*`-Elemente haben ihre Font-Sizes direkt im Komponenten-CSS (nicht in der Type Scale), da sie sich vom Rest unterscheiden
+- **Responsive:** `≤768px` → 2-Spalten; Kopfzeile stapelt vertikal
+- **PHP-Var:** `$fachbereiche_hp` (Array mit `num`, `tag`, `titel`, `text`, `farbe`, `link`)
+
+### 6 · Trainers (`#trainers`)
+- `.trainers-header` → Pattern B (korrigiert von früherem Pattern-A-Fehler)
+- `.trainer-grid` → Pattern A; unverändert
+
+### 7 · Stats / Manifest / News
+- Unverändert; alle Pattern A
+
+### 8 · CTA Hero (`#cta-hero`)
+- **Hintergrund:** full-bleed Radial-Gradient (blau), kein `max-width`
+- **Inhalt:** `.cta-hero-inner` → Pattern B
+- **Headline:** `font-size: var(--fs-display)` (von Type Scale geerbt via `h2`-Selektor)
+- **PHP-Var:** CTA-Text und Button aus `gfp_hp()`
+
+---
+
+## Scroll-Animationen (`.fu` / `.vis`)
+
+```css
+/* Scroll-Fade-Utility */
+.fu  { opacity: 0; transform: translateY(28px) scale(0.97);
+       transition: opacity .8s cubic-bezier(0.16, 1, 0.3, 1),
+                   transform .8s cubic-bezier(0.16, 1, 0.3, 1); }
+.fu.vis { opacity: 1; transform: none; }
+```
+
+- IntersectionObserver, `threshold: 0.1` — sobald 10 % des Elements sichtbar
+- Spring-Easing `cubic-bezier(0.16, 1, 0.3, 1)` (Penner easeOutExpo-Annäherung)
+- Sektionen bekommen die Klasse `.fu` direkt im PHP-Markup; JS fügt `.vis` beim Eintritt hinzu
+- **Hero** hat keine `.fu`-Klasse (er ist sofort sichtbar) — stattdessen `@keyframes heroIn` direkt auf `#hero`
 
 ---
 
@@ -197,7 +262,7 @@ Verifiziert bei 1600px Viewport: Inhaltskante überall `left=160 / right=1440 / 
 
 ## Weitere Seiten
 
-**Startseite** (`front-page.php` + `inc/admin-startseite.php`): Speichern per AJAX — **nicht** über Gutenberg-„Aktualisieren". Trainer-Abschnitt lädt CPTs mit `_trainer_startseite = 1`, max. 6.
+**Startseite** (`front-page.php` + `inc/admin-startseite.php`): Speichern per AJAX — **nicht** über Gutenberg-„Aktualisieren". Trainer-Abschnitt lädt CPTs mit `_trainer_startseite = 1`, max. 6. Detaillierter Sektion-Aufbau → Abschnitt „Startseiten-Sektionen" weiter oben.
 
 **Kursdetailseite** (`single-kurs.php`): Sidebar-Reihenfolge: Termine & Ort → Dauer → Teilnehmende → Investition → Voraussetzungen → Infoabend. CTA-Button Farbe = Fachbereich-Hex, inline gesetzt. `.kurs-infocard__notiz` hat dieselbe Farbe wie `.kurs-infocard__wert` (beide Kontexte: allgemein + `body.single-kurs`).
 
