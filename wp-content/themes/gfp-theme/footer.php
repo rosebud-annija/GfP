@@ -19,7 +19,7 @@ $programme = [
 ];
 ?>
 
-<footer class="site-footer" style="padding:64px 48px 36px;text-align:left;">
+<footer class="site-footer" style="padding:64px var(--section-px) 36px;text-align:left;">
     <div class="ft-inner">
         <div class="ft-top">
             <div>
