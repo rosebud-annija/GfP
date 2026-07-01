@@ -207,16 +207,17 @@ echo '<script type="application/ld+json">' . wp_json_encode($schema_org, JSON_UN
 <div id="clients" class="fu">
     <div class="clients-inner">
         <p class="clients-headline"><?php echo esc_html($marquee_label); ?></p>
-        <div class="clients-logos">
+    </div>
+    <div class="clients-marquee">
+        <div class="clients-track">
             <?php
-            $clients_arr = array_values($clients);
-            $clients_count = count($clients_arr);
-            foreach ($clients_arr as $i => $logo) : ?>
-                <span class="clogo"><?php echo esc_html($logo); ?></span>
-                <?php if ($i < $clients_count - 1) : ?>
-                    <span class="clogo-sep">★</span>
-                <?php endif; ?>
-            <?php endforeach; ?>
+            $clients_arr   = array_values($clients);
+            $clients_reps  = max(2, (int) ceil(16 / max(1, count($clients_arr))) * 2);
+            for ($rep = 0; $rep < $clients_reps; $rep++) :
+                foreach ($clients_arr as $logo) : ?>
+                    <span class="clogo"><?php echo esc_html($logo); ?></span>
+                <?php endforeach;
+            endfor; ?>
         </div>
     </div>
 </div>

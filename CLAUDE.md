@@ -168,10 +168,10 @@ Für Flex-/Grid-Container, wo ein zusätzlicher Wrapper Kind-Selektoren brechen 
 | `.kurs-back` | B | Zurück-Button Kursdetailseite |
 | **Startseite — Hero:** `#hero` bg full-bleed + `.hero-rail` Inhalt | B | `#hero` ohne max-width; `.hero-rail` ist Pattern B |
 | **Startseite — Clients:** `.clients-inner` | A | `max-width: var(--max-width); margin: 0 auto` |
-| **Startseite — Fachbereiche:** `.fb-header` + `.fb-grid` | B | Beide auf Pattern B — **außer** `.fb-card:first-child`/`:last-child`: Hintergrund + 3px-Akzentlinie laufen wieder edge-to-edge (`::before`/`::after`), Text-Padding bleibt auf der Schiene |
-| **Startseite — Trainer:** `.trainers-header` | B | Korrigiert von falschem Pattern A (Doppel-Indent) zu Pattern B |
+| **Startseite — Fachbereiche:** `.fb-header` + `.fb-grid` | B | Beide auf Pattern B; `.fb-card` ist ein echtes Grid-Item mit `gap: 1.5rem` und `border-radius: 1rem` — der alte edge-to-edge-Bleed-Hack (`:first-child`/`:last-child` + `::before`) ist entfernt |
+| **Startseite — Trainer:** `.trainers-header` + `.trainer-grid` | B | `.trainer-grid` auf Pattern B umgestellt (war A/edge-to-edge), 4 Spalten, `gap: 1.5rem`, `.trainer-card` mit `border-radius: 1rem` |
 | **Startseite — CTA:** `#cta-hero` bg full-bleed + `.cta-hero-inner` Inhalt | B | Gleiche Logik wie Hero |
-| **Startseite — Rest:** `.problem-inner`, `.trainer-grid`, `.stats-grid`, `.manifest-inner`, `.news-inner` | A | Zentrierte Schienen auf `--max-width` |
+| **Startseite — Rest:** `.problem-inner`, `.stats-grid`, `.manifest-inner`, `.news-inner` | A | Zentrierte Schienen auf `--max-width` |
 
 **⚠️ Absichtliche Ausnahmen (NICHT auf die Schiene ziehen):**
 - **Full-bleed Hintergründe:** `#hero` und `#cta-hero` sind echte Vollbreiten-Sektionen (Gradient-Hintergrund), aber ihr Inhalt liegt auf Pattern B. `#image-hero` (Bildstreifen) und `.kontakt-map` sind ebenfalls voll-randig ohne Inhalt-Wrapper.
@@ -181,13 +181,17 @@ Für Flex-/Grid-Container, wo ein zusätzlicher Wrapper Kind-Selektoren brechen 
 
 ---
 
-## Startseiten-Sektionen (`front-page.php`) — Stand Juni 2026
+## Startseiten-Sektionen (`front-page.php`) — Stand Juli 2026
 
 ### 1 · Hero (`#hero`)
 - **Hintergrund:** full-bleed Radial-Gradient (orange-rot), kein `max-width`
 - **Inhalt:** `<div class="hero-rail">` → Pattern B, `max-width: calc(var(--max-width) + 2 * var(--section-px))`
 - **Inhalt-Wrapper:** `<div class="hero-content">` limitiert Text auf `max-width: 840px`
 - **Animation:** `@keyframes heroIn` — `opacity 0 + translateY(14px)` → normal, 0.9s spring
+- **Lebendiger Hintergrund (Stand Juli 2026):** `#hero` hat zusätzlich `@keyframes heroDrift` (18s, `background-position` wandert, `background-size: 160% 160%`) — der Lichtpunkt des Gradients wandert sanft. `#hero::before` (Ambient-Glow-Layer) pulsiert zusätzlich via `@keyframes heroPulse` (6s, Opacity + `scale`). Beide respektieren `prefers-reduced-motion`.
+- **Mobile:** `#hero` ist ab `≤768px` `align-items: flex-end` (Inhalt unten ausgerichtet, vorher `flex-start`)
+- **`.hero-eyebrow`:** teilt sich `--fs-label` mit Buttons/Badges — Variable wurde um `+3px` erhöht (`calc(1.2rem + 3px)`), wirkt sich auf alle Elemente dieser Type-Scale-Gruppe aus (inkl. `.fb-card-tag`, s. u.)
+- **`.hero-body`:** `font-size: calc(1rem + 1pt)`, `line-height: 1.5` (eigene Regel, nicht mehr Teil der gemeinsamen `line-height: 1.7`-Gruppe)
 - **PHP-Vars:** `$hero_eyebrow`, `$hero_titel`, `$hero_sub`, `$hero_text`, `$hero_cta_label`, `$hero_cta_url`
 
 ### 2 · Problem (`#problem`)
@@ -196,28 +200,33 @@ Für Flex-/Grid-Container, wo ein zusätzlicher Wrapper Kind-Selektoren brechen 
 ### 3 · Alfred / Testimonials
 - **Entfernt:** Alfred-Sektion und zugehörige CSS wurden vollständig entfernt.
 
-### 4 · Clients (`#clients`)
-- **Hintergrund:** `var(--black)`, kein Laufband mehr
-- **Layout:** `.clients-inner` (Pattern A, `max-width: var(--max-width)`)
-- **Headline:** `.clients-headline` zeigt `$marquee_label` (z. B. „Weniger Bullshit, mehr Impact.") — zentriert, `font-size: var(--fs-h2)`
-- **Logos:** Flex-Wrap-Reihe; je ein `<span class="clogo">` pro Kundenname, dazwischen `<span class="clogo-sep">★</span>` (nach jedem Logo außer dem letzten)
+### 4 · Clients (`#clients`) — Stand Juli 2026: wieder Laufband
+- **Hintergrund:** `var(--black)`
+- **Headline:** `.clients-inner > .clients-headline` zeigt `$marquee_label` (z. B. „Weniger Bullshit, mehr Impact.") — zentriert, `font-size: var(--fs-h2)`
+- **Laufband:** `.clients-marquee` (volle Breite, `overflow: hidden`, `mask-image` blendet links/rechts ins Dunkle aus) → `.clients-track` (Flex, `width: max-content`, `animation: clientsScroll 32s linear infinite`, pausiert bei Hover)
+- **Keine Sterne mehr:** `.clogo-sep`/★-Trenner wurden entfernt, nur noch `<span class="clogo">` pro Kundenname
+- **Nahtloser Loop:** PHP wiederholt die Kundenliste dynamisch oft genug (`$clients_reps = max(2, ceil(16 / count($clients_arr)) * 2)`), damit der Track immer breiter als der Viewport bleibt — sonst wird bei kurzen Listen auf breiten Screens am Loop-Ende kurz Leerraum sichtbar, bevor die Animation neu startet. **Wichtig:** die Wiederholungszahl muss immer gerade sein, da `translateX(-50%)` nur bei geradzahligen Kopien nahtlos aufgeht.
+- **Firmennamen-Größe:** `.clogo` ist bewusst größer als die Headline: `font-size: calc(var(--fs-h2) * 1.2)`
 - **PHP-Vars:** `$marquee_label` (Admin-Tab), `$clients` (Array; `$marquee_items` wird nicht mehr ausgegeben, bleibt aber definiert)
 
 ### 5 · Fachbereiche (`#fachbereiche`)
 - **Layout:** 5-Spalten-Card-Grid (kein Sticky-Scroll mehr)
 - **Kopfzeile:** `.fb-header` → Pattern B; enthält `<h2 class="display">` + Intro-Text
-- **Grid:** `.fb-grid` → Pattern B (`max-width: calc(var(--max-width) + 2 * var(--section-px))`), `display: grid; grid-template-columns: repeat(5, 1fr)`
-- **Cards:** `.fb-card` mit CSS-Custom-Property `--fb-farbe` (Hex aus ACF/PHP). Unterer Farbstreifen via `::after`. Hintergrund `color-mix(in srgb, var(--fb-farbe) 16%, #0d0d0d)`
-- **Font-Sizes:** alle `.fb-card-*`-Elemente haben ihre Font-Sizes direkt im Komponenten-CSS (nicht in der Type Scale), da sie sich vom Rest unterscheiden
+- **Grid:** `.fb-grid` → Pattern B (`max-width: calc(var(--max-width) + 2 * var(--section-px))`), `display: grid; grid-template-columns: repeat(5, 1fr); gap: 1.5rem`
+- **Cards:** `.fb-card` mit CSS-Custom-Property `--fb-farbe` (Hex aus ACF/PHP), `border-radius: 1rem`, Hover-Lift `translateY(-4px)`. Unterer Farbstreifen via `::after`. Hintergrund `color-mix(in srgb, var(--fb-farbe) 16%, #0d0d0d)`. **Stand Juli 2026:** der alte edge-to-edge-Bleed-Hack für `:first-child`/`:last-child` (Vollbreiten-Hintergrund + Farbstreifen bis zum Viewport-Rand) wurde entfernt — alle Cards sind jetzt gleich, echte Grid-Items mit sichtbarem `gap`
+- **`.fb-card-tag`:** Font-Size ist **nicht** mehr eigenständig, sondern Teil der `--fs-label`-Type-Scale-Gruppe — gleiche Größe wie `.hero-eyebrow`
 - **Responsive:** `≤768px` → 2-Spalten; Kopfzeile stapelt vertikal
 - **PHP-Var:** `$fachbereiche_hp` (Array mit `num`, `tag`, `titel`, `text`, `farbe`, `link`)
 
 ### 6 · Trainers (`#trainers`)
 - `.trainers-header` → Pattern B (korrigiert von früherem Pattern-A-Fehler)
-- `.trainer-grid` → Pattern A; unverändert
+- `.trainer-grid` → Pattern B seit Juli 2026 (war Pattern A/edge-to-edge): `max-width: calc(var(--max-width) + 2 * var(--section-px))`, `grid-template-columns: repeat(4, 1fr)` (war 3), `gap: 1.5rem`, `.trainer-card` mit `border-radius: 1rem` + Hover-Lift `translateY(-4px)`
+- `.trainer-img-wrap` Höhe `380px` (war `300px`)
+- Mobile (`≤768px`): weiterhin explizit 2-Spalten-Override
 
 ### 7 · Stats / Manifest / News
-- Unverändert; alle Pattern A
+- `#stats`/`#manifest` unverändert, Pattern A
+- `.news-grid`/`.news-card` seit Juli 2026 mit `gap: 1.5rem` + `border-radius: 1rem` statt `gap: 1px`-Flush-Layout (gleiche Karten-Konvention wie Fachbereiche/Trainer)
 
 ### 8 · CTA Hero (`#cta-hero`)
 - **Hintergrund:** full-bleed Radial-Gradient (blau), kein `max-width`
@@ -230,17 +239,26 @@ Für Flex-/Grid-Container, wo ein zusätzlicher Wrapper Kind-Selektoren brechen 
 ## Scroll-Animationen (`.fu` / `.vis`)
 
 ```css
-/* Scroll-Fade-Utility */
-.fu  { opacity: 0; transform: translateY(28px) scale(0.97);
-       transition: opacity .8s cubic-bezier(0.16, 1, 0.3, 1),
-                   transform .8s cubic-bezier(0.16, 1, 0.3, 1); }
-.fu.vis { opacity: 1; transform: none; }
+/* Scroll-Fade-Utility — startet kleiner mit abgerundeten Ecken, wächst auf volle Breite (Stand Juli 2026) */
+.fu {
+  opacity: 0;
+  transform: translateY(28px) scale(0.94);
+  border-radius: 28px;
+  overflow: hidden;
+  transition: opacity .9s cubic-bezier(0.16, 1, 0.3, 1),
+              transform .9s cubic-bezier(0.16, 1, 0.3, 1),
+              border-radius .9s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.fu.vis { opacity: 1; transform: none; border-radius: 0; }
 ```
 
 - IntersectionObserver, `threshold: 0.1` — sobald 10 % des Elements sichtbar
 - Spring-Easing `cubic-bezier(0.16, 1, 0.3, 1)` (Penner easeOutExpo-Annäherung)
 - Sektionen bekommen die Klasse `.fu` direkt im PHP-Markup; JS fügt `.vis` beim Eintritt hinzu
-- **Hero** hat keine `.fu`-Klasse (er ist sofort sichtbar) — stattdessen `@keyframes heroIn` direkt auf `#hero`
+- **Da `.fu` direkt auf den Sektions-Elementen sitzt** (die ihre eigene Hintergrundfarbe tragen — `#problem`, `#clients`, `#fachbereiche`, `#trainers`, `#stats`, `#cta-hero`, `#testimonial`, `#manifest`, `#news`), wächst mit dem Skalierungs-Effekt sichtbar auch der farbige Hintergrund der jeweiligen Sektion mit
+- **`prefers-reduced-motion: reduce`:** `.fu` bekommt nur ein einfaches Opacity-Fade (`.3s linear`) ohne Transform/Radius
+- **Hero** hat keine `.fu`-Klasse (er ist sofort sichtbar) — stattdessen `@keyframes heroIn` (+ `heroDrift`/`heroPulse`, s. o.) direkt auf `#hero`
+- **`#image-hero`** (Bildstreifen) hat ebenfalls keine `.fu`-Klasse — nutzt stattdessen sein eigenes endloses Laufband (`ihScroll`)
 
 ---
 
