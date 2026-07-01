@@ -168,7 +168,7 @@ Für Flex-/Grid-Container, wo ein zusätzlicher Wrapper Kind-Selektoren brechen 
 | `.kurs-back` | B | Zurück-Button Kursdetailseite |
 | **Startseite — Hero:** `#hero` bg full-bleed + `.hero-rail` Inhalt | B | `#hero` ohne max-width; `.hero-rail` ist Pattern B |
 | **Startseite — Clients:** `.clients-inner` | A | `max-width: var(--max-width); margin: 0 auto` |
-| **Startseite — Fachbereiche:** `.fb-header` + `.fb-grid` | B | **Beide** auf Pattern B — kein edge-to-edge mehr |
+| **Startseite — Fachbereiche:** `.fb-header` + `.fb-grid` | B | Beide auf Pattern B — **außer** `.fb-card:first-child`/`:last-child`: Hintergrund + 3px-Akzentlinie laufen wieder edge-to-edge (`::before`/`::after`), Text-Padding bleibt auf der Schiene |
 | **Startseite — Trainer:** `.trainers-header` | B | Korrigiert von falschem Pattern A (Doppel-Indent) zu Pattern B |
 | **Startseite — CTA:** `#cta-hero` bg full-bleed + `.cta-hero-inner` Inhalt | B | Gleiche Logik wie Hero |
 | **Startseite — Rest:** `.problem-inner`, `.trainer-grid`, `.stats-grid`, `.manifest-inner`, `.news-inner` | A | Zentrierte Schienen auf `--max-width` |
@@ -269,6 +269,16 @@ Für Flex-/Grid-Container, wo ein zusätzlicher Wrapper Kind-Selektoren brechen 
 **Kursübersicht** (`archive-kurs.php`): Filterreihenfolge fest kodiert. `data-filter` = normalisierter Lowercase-Name. Filterlink von Startseite: `rawurlencode(mb_strtolower($titel))` als Hash.
 
 **Kontaktseite**: Meta Box nur bei `page-kontakt.php`. Formular-Handler via `action=gfp_contact_form`.
+
+---
+
+## Performance-Optimierungen (`functions.php`) — Stand Juli 2026
+
+- **Preconnect für Google Fonts** via `wp_resource_hints`-Filter (`fonts.googleapis.com` + `fonts.gstatic.com`, letzteres mit `crossorigin`)
+- **WP-Standard-Bloat entfernt** (per `init`-Hook, `remove_action`): Emoji-Script/-Styles, RSD-Link, `wlwmanifest`, Shortlink, Generator-Tag, oEmbed-Discovery — keins davon wird vom Theme genutzt
+- **Cache-Busting per `filemtime()`** statt fixer Versionsnummer für `style.css` und `assets/js/kurs-filter.js` — Browser-Cache wird bei jeder Datei-Änderung automatisch invalidiert, bleibt sonst langfristig gecacht
+
+**Noch offen:** Bilder in `front-page.php` (Zeilen ~255, ~287) verwenden rohe `<img src="...">`-URLs statt `wp_get_attachment_image()` — kein `srcset`/`sizes`, kein `loading="lazy"`, keine `width`/`height`. Größter verbleibender Performance-Hebel, aber aufwändiger (Bilder müssten als Attachment-ID statt URL gespeichert werden).
 
 ---
 
